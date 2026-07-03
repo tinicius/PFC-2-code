@@ -26,7 +26,7 @@ def worker(task):
     # Path to instance file
     instance_path = os.path.join("/home/vinicius/Documents/CEFET/TCC/pfc2/datasets", dataset, instance)
         
-    solution_path = os.path.join(result_dir, f"{instance}_{algo['id']}_{run_id}.json")
+    solution_path = os.path.join(result_dir, "temp", f"{instance}_{algo['id']}_{run_id}.json")
     
     cmd = [
         os.path.join("project", "algos", "algo_runner"),
@@ -91,6 +91,9 @@ def main():
             
     result_dir = os.path.join(results_base, f"result_{next_id:04d}")
     os.makedirs(result_dir, exist_ok=True)
+    
+    temp_dir = os.path.join(result_dir, "temp")
+    os.makedirs(temp_dir, exist_ok=True)
     
     shutil.copy(config_path, os.path.join(result_dir, "config.json"))
     

@@ -1,0 +1,11 @@
+algo_id,run_id,status,objective,gap,items,aisles,exec_time
+greedy,1,feasible,3.3333333333333335,0.0,10,3,8.2889e-05
+greedy,2,feasible,4.0,0.0,12,3,9.1078e-05
+greedy,3,feasible,3.0,0.0,12,4,8.9373e-05
+greedy,5,feasible,3.0,0.0,12,4,7.1028e-05
+greedy,4,feasible,3.3333333333333335,0.0,10,3,8.8328e-05
+greedy,6,feasible,3.3333333333333335,0.0,10,3,8.7123e-05
+greedy,8,feasible,3.3333333333333335,0.0,10,3,7.2197e-05
+greedy,7,feasible,3.0,0.0,12,4,7.0721e-05
+greedy,10,feasible,3.6666666666666665,0.0,11,3,0.000133543
+greedy,9,feasible,3.6666666666666665,0.0,11,3,0.000107084
