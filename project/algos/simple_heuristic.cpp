@@ -143,8 +143,6 @@ SimpleHeuristic::SimpleHeuristic(const std::map<std::string, std::string>& param
     _greedy = get_param("greedy");
     _first_order = get_param("first_order");
 
-    std::cout << "Params: order=" << _order << ", greedy=" << _greedy << ", first_order=" << _first_order << std::endl;
-
     std::set<std::string> valid_order = { "random", "asc", "desc", "similar", "similar_weighted", "diff", "diff_weighted" };
     if (!_order.empty() && valid_order.find(_order) == valid_order.end()) {
         throw std::invalid_argument("SimpleHeuristic: invalid 'order'=" + _order);
@@ -384,15 +382,6 @@ HeuristicResult SimpleHeuristic::solve(const ProblemInput& instance) {
 
     if (visited_aisles.empty()) {
         return HeuristicResult{ {}, {}, 0.0 };
-    }
-
-    std::cout << "Selected orders: ";
-    for (int idx : picked.selected) {
-        std::cout << idx << " ";
-    }
-    std::cout << "\nVisited aisles: ";
-    for (int idx : visited_aisles) {
-        std::cout << idx << " ";
     }
 
     return HeuristicResult{
