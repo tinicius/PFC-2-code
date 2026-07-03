@@ -1,0 +1,7 @@
+algo_id,run_id,status,objective,gap,items,aisles,exec_time
+grasp,1,feasible,0.0,0.0,0,0,0.200138
+grasp,2,feasible,0.0,0.0,0,0,0.200088
+grasp,3,feasible,0.0,0.0,0,0,0.200094
+sa,2,feasible,0.0,0.0,0,0,0.200076
+sa,1,feasible,0.0,0.0,0,0,0.200088
+sa,3,feasible,0.0,0.0,0,0,0.200085
