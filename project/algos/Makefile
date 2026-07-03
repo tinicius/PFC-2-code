@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGS = -O2 -std=c++17
 TARGET = algo_runner
 
-SRCS = algo_runner.cpp grasp.cpp simulated_annealing.cpp
+SRCS = algo_runner.cpp simple_heuristic.cpp
 OBJS = $(SRCS:.cpp=.o)
 
 all: $(TARGET)

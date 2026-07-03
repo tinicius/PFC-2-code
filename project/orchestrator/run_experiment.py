@@ -25,24 +25,20 @@ def worker(task):
     
     # Path to instance file
     instance_path = os.path.join("/home/vinicius/Documents/CEFET/TCC/pfc2/datasets", dataset, instance)
-    input_data = ""
-    if os.path.exists(instance_path):
-        with open(instance_path, "r") as f:
-            input_data = f.read()
-    else:
-        input_data = "61 155 116" # Dummy
         
     solution_path = os.path.join(result_dir, f"{instance}_{algo['id']}_{run_id}.json")
     
     cmd = [
         os.path.join("project", "algos", "algo_runner"),
         f"--binary={algo['binary']}",
-        f"--input={input_data}",
+        f"--input={instance_path}",
         f"--params={json.dumps(algo['params'])}",
         f"--time-limit={time_limit}",
         f"--seed={run_id}",
         f"--output={solution_path}"
     ]
+    for k, v in algo.get('params', {}).items():
+        cmd.append(f"--{k}={v}")
     
     metrics = {
         "algo_id": algo['id'],
@@ -56,7 +52,11 @@ def worker(task):
     }
     
     try:
-        subprocess.run(cmd, capture_output=True, text=True, timeout=time_limit)
+        print(cmd)
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=time_limit)
+        if proc.stderr:
+            print(proc.stderr, file=sys.stderr)
+            
         if os.path.exists(solution_path):
             with open(solution_path, "r") as f:
                 sol = json.load(f)
