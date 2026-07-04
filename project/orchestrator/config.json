@@ -533,5 +533,5 @@
   ],
   "runs_per_instance": 5,
   "time_limit": 90,
-  "n_workers": null
+  "n_workers": 8
 }

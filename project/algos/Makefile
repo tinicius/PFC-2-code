@@ -1,17 +1,17 @@
-CXX = g++
-CXXFLAGS = -O2 -std=c++17
-TARGET = algo_runner
+ORTOOLS_PREFIX = /home/vinicius/.local/opt/ortools
+BUILD_DIR = build
 
-SRCS = algo_runner.cpp simple_heuristic.cpp
-OBJS = $(SRCS:.cpp=.o)
+all: $(BUILD_DIR)/algo_runner
+	cp $(BUILD_DIR)/algo_runner .
 
-all: $(TARGET)
+$(BUILD_DIR)/Makefile: CMakeLists.txt
+	mkdir -p $(BUILD_DIR)
+	cmake -S . -B $(BUILD_DIR) -DCMAKE_PREFIX_PATH=$(ORTOOLS_PREFIX)
 
-$(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
-
-%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+$(BUILD_DIR)/algo_runner: $(BUILD_DIR)/Makefile
+	cmake --build $(BUILD_DIR) -j4
 
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -rf $(BUILD_DIR) algo_runner algo_runner.o simple_heuristic.o
+
+.PHONY: all clean
