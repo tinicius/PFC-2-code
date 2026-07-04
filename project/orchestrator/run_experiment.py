@@ -45,14 +45,12 @@ def worker(task):
         "run_id": run_id,
         "status": "error",
         "objective": 0.0,
-        "gap": 0.0,
         "items": 0,
         "aisles": 0,
         "exec_time": 0.0
     }
     
     try:
-        print(cmd)
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=time_limit)
         if proc.stderr:
             print(proc.stderr, file=sys.stderr)
@@ -113,17 +111,20 @@ def main():
                     
     results_by_instance = defaultdict(list)
     
+    total = len(tasks)
     n_workers = config.get('n_workers', 4)
+    print(f"Starting {total} tasks with {n_workers} workers...")
     with ProcessPoolExecutor(max_workers=n_workers) as executor:
         futures = [executor.submit(worker, t) for t in tasks]
-        for future in as_completed(futures):
+        for completed, future in enumerate(as_completed(futures), start=1):
             instance, metrics = future.result()
             results_by_instance[instance].append(metrics)
+            print(f"[{completed}/{total}] {instance} - {metrics['algo_id']} (run {metrics['run_id']}) -> {metrics['status']}")
             
     for instance, metrics_list in results_by_instance.items():
         csv_path = os.path.join(result_dir, f"{instance.replace('.txt', '')}.csv")
         with open(csv_path, "w") as f:
-            headers = ["algo_id", "run_id", "status", "objective", "gap", "items", "aisles", "exec_time"]
+            headers = ["algo_id", "run_id", "status", "objective", "items", "aisles", "exec_time"]
             f.write(",".join(headers) + "\n")
             for m in metrics_list:
                 f.write(",".join(str(m.get(h, "")) for h in headers) + "\n")

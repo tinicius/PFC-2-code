@@ -76,7 +76,6 @@ def validate(instance_path, solution_path):
     Returns a dict with:
         status:    "feasible" | "infeasible" | "error"
         objective: float  (total_items / num_visited_aisles, or 0.0)
-        gap:       float  (always 0.0 — no known upper bound available)
         items:     int    (total items in selected orders)
         aisles:    int    (number of visited aisles)
         message:   str    (human-readable explanation, present on infeasible/error)
@@ -87,7 +86,6 @@ def validate(instance_path, solution_path):
         return {
             "status": "error",
             "objective": 0.0,
-            "gap": 0.0,
             "items": 0,
             "aisles": 0,
             "message": f"Failed to parse instance: {e}",
@@ -99,7 +97,6 @@ def validate(instance_path, solution_path):
         return {
             "status": "error",
             "objective": 0.0,
-            "gap": 0.0,
             "items": 0,
             "aisles": 0,
             "message": f"Failed to parse solution: {e}",
@@ -120,7 +117,6 @@ def validate(instance_path, solution_path):
         return {
             "status": "infeasible",
             "objective": 0.0,
-            "gap": 0.0,
             "items": 0,
             "aisles": 0,
             "message": "Empty solution: no orders selected.",
@@ -132,7 +128,6 @@ def validate(instance_path, solution_path):
             return {
                 "status": "infeasible",
                 "objective": 0.0,
-                "gap": 0.0,
                 "items": 0,
                 "aisles": 0,
                 "message": f"Order index {o} out of range [0, {n_orders - 1}].",
@@ -143,7 +138,6 @@ def validate(instance_path, solution_path):
             return {
                 "status": "infeasible",
                 "objective": 0.0,
-                "gap": 0.0,
                 "items": 0,
                 "aisles": 0,
                 "message": f"Aisle index {a} out of range [0, {n_aisles - 1}].",
@@ -154,7 +148,6 @@ def validate(instance_path, solution_path):
         return {
             "status": "infeasible",
             "objective": 0.0,
-            "gap": 0.0,
             "items": 0,
             "aisles": 0,
             "message": "Duplicate order indices in selected_orders.",
@@ -164,7 +157,6 @@ def validate(instance_path, solution_path):
         return {
             "status": "infeasible",
             "objective": 0.0,
-            "gap": 0.0,
             "items": 0,
             "aisles": 0,
             "message": "Duplicate aisle indices in visited_aisles.",
@@ -184,7 +176,6 @@ def validate(instance_path, solution_path):
         return {
             "status": "infeasible",
             "objective": 0.0,
-            "gap": 0.0,
             "items": total_items,
             "aisles": len(visited_aisles),
             "message": f"Wave too small: {total_items} items < lb={lb}.",
@@ -194,7 +185,6 @@ def validate(instance_path, solution_path):
         return {
             "status": "infeasible",
             "objective": 0.0,
-            "gap": 0.0,
             "items": total_items,
             "aisles": len(visited_aisles),
             "message": f"Wave too large: {total_items} items > ub={ub}.",
@@ -212,7 +202,6 @@ def validate(instance_path, solution_path):
             return {
                 "status": "infeasible",
                 "objective": 0.0,
-                "gap": 0.0,
                 "items": total_items,
                 "aisles": len(visited_aisles),
                 "message": (
@@ -228,7 +217,6 @@ def validate(instance_path, solution_path):
     return {
         "status": "feasible",
         "objective": objective,
-        "gap": 0.0,
         "items": total_items,
         "aisles": num_aisles,
     }
