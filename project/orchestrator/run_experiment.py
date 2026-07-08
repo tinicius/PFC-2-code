@@ -28,31 +28,18 @@ def worker(task):
         
     solution_path = os.path.join(result_dir, "temp", f"{instance}_{algo['id']}_{run_id}.json")
 
-    binary_name = algo.get('binary', 'algo_runner')
-    algo_dir = os.path.join("project", "algos")
-    binary_path = os.path.join(algo_dir, binary_name)
+    algo_name = algo.get('binary', 'sa')
+    java_dir = "project/algos_java"
 
-    if binary_name == "spo_solver":
-        cmd = [
-            binary_path,
-            f"--input={instance_path}",
-            f"--output={solution_path}",
-            f"--time-limit={time_limit}",
-        ]
-        for k, v in algo.get('params', {}).items():
-            cmd.append(f"--{k}={v}")
-    else:
-        cmd = [
-            os.path.join(algo_dir, "algo_runner"),
-            f"--binary={binary_name}",
-            f"--input={instance_path}",
-            f"--params={json.dumps(algo['params'])}",
-            f"--time-limit={time_limit}",
-            f"--seed={run_id}",
-            f"--output={solution_path}"
-        ]
-        for k, v in algo.get('params', {}).items():
-            cmd.append(f"--{k}={v}")
+    cmd = [
+        "java", "-cp", java_dir, "Main",
+        f"--input={instance_path}",
+        f"--output={solution_path}",
+        f"--time-limit={time_limit}",
+        f"--seed={run_id}",
+        f"--algo={algo_name}",
+        f"--params={json.dumps(algo.get('params', {}))}",
+    ]
     
     metrics = {
         "algo_id": algo['id'],
@@ -108,7 +95,21 @@ def main():
     os.makedirs(temp_dir, exist_ok=True)
     
     shutil.copy(config_path, os.path.join(result_dir, "config.json"))
-    
+
+    # Compile Java code if needed
+    java_dir = "project/algos_java"
+    main_class = os.path.join(java_dir, "Main.class")
+    if not os.path.exists(main_class):
+        print("Compiling Java code...")
+        subprocess.run(
+            ["javac", "-d", ".",
+             "Main.java",
+             "heuristic/Heuristic.java", "heuristic/SA.java",
+             "model/Problem.java", "model/Solution.java",
+             "neighborhood/Move.java", "neighborhood/AddAisle.java", "neighborhood/RemoveAisle.java"],
+            cwd=java_dir, check=True
+        )
+
     tasks = []
     for dataset, instances in config['datasets'].items():
         for instance in instances:

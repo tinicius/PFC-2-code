@@ -12,53 +12,115 @@ public class Main {
 
     public static long startTimeMillis;
 
-    public static String inFile = "datasets/a/instance_0001.txt";
-
+    public static String inFile = null;
+    public static String outFile = null;
     public static long seed = 42;
-    public static long timeLimit = (10 * 1000); // in milliseconds
+    public static long timeLimit = 10000; // milliseconds
     public static long maxIters = 10000;
+    public static String algo = "sa";
+    public static double alpha = 0.95;
+    public static double t0 = 1000.0;
+    public static int saMax = 10000;
 
     public static void main(String[] args) throws IOException {
+        if (!readArgs(args)) {
+            System.err.println("Usage: java Main --input=<path> --output=<path> --time-limit=<secs> [--seed=<int>] [--algo=<name>] [--params=<json>]");
+            System.exit(1);
+        }
 
         Problem problem = new Problem(inFile);
         Random random = new Random(seed);
 
-        // re-starting time counting (after reading files)
         startTimeMillis = System.currentTimeMillis();
 
         Solution solution = new Solution(problem);
 
-        Heuristic solver = new SA(problem, random, 0.95, 1000.0, 10000);
+        if ("sa".equals(algo)) {
+            Heuristic solver = new SA(problem, random, alpha, t0, saMax);
+            solver.addMove(new AddAisle(problem, random, "AddAisle"));
+            solver.addMove(new RemoveAisle(problem, random, "RemoveAisle"));
 
-        solver.addMove(new AddAisle(problem, random, "AddAisle"));
-        solver.addMove(new RemoveAisle(problem, random, "RemoveAisle"));
+            if (solver.getMoves().size() > 0)
+                solution = solver.run(solution, timeLimit, maxIters, System.out);
+        }
+        else {
+            System.err.println("Unknown algorithm: " + algo);
+            System.exit(1);
+        }
 
-        // running stochastic local search
-        if (solver.getMoves().size() > 0)
-            solution = solver.run(solution, timeLimit, maxIters, System.out);
+        double execTime = (System.currentTimeMillis() - startTimeMillis) / 1000.0;
 
+        solution.write(outFile, execTime);
         solution.validate(System.err);
-        
-        System.out.printf("Best makespan.....: %f\n", solution.getObj());
-        System.out.printf("N. of Iterations..: %d\n", solver.getNIters());
-        System.out.printf("Total runtime.....: %.2fs\n", (System.currentTimeMillis() - startTimeMillis) / 1000.0);
+
+        System.out.printf("Best objective..: %f\n", solution.getObj());
+        System.out.printf("Total runtime...: %.2fs\n", execTime);
     }
 
     /**
      * Reads the input arguments.
      *
      * @param args the input arguments
+     * @return true if required arguments are present
      */
     public static boolean readArgs(String args[]) {
-        if (args.length < 2) {
-            // printUsage();
-            return false;
+        for (String arg : args) {
+            if (arg.startsWith("--input=")) {
+                inFile = arg.substring("--input=".length());
+            }
+            else if (arg.startsWith("--output=")) {
+                outFile = arg.substring("--output=".length());
+            }
+            else if (arg.startsWith("--time-limit=")) {
+                timeLimit = Long.parseLong(arg.substring("--time-limit=".length())) * 1000;
+            }
+            else if (arg.startsWith("--seed=")) {
+                seed = Long.parseLong(arg.substring("--seed=".length()));
+            }
+            else if (arg.startsWith("--algo=")) {
+                algo = arg.substring("--algo=".length());
+            }
+            else if (arg.startsWith("--params=")) {
+                parseParams(arg.substring("--params=".length()));
+            }
         }
 
-        int index = -1;
+        return inFile != null && outFile != null;
+    }
 
-        inFile = args[++index];
+    /**
+     * Parses a flat JSON object for algorithm params.
+     * Expected format: {"alpha":0.95,"t0":1000.0,"saMax":10000,"maxIters":10000}
+     */
+    private static void parseParams(String json) {
+        if (json == null || json.isEmpty()) return;
+        json = json.trim();
+        if (!json.startsWith("{") || !json.endsWith("}")) return;
+        json = json.substring(1, json.length() - 1).trim();
+        if (json.isEmpty()) return;
 
-        return true;
+        String[] pairs = json.split(",");
+        for (String pair : pairs) {
+            pair = pair.trim();
+            int colonIdx = pair.indexOf(':');
+            if (colonIdx < 0) continue;
+            String key = pair.substring(0, colonIdx).trim().replaceAll("^\"|\"$", "");
+            String value = pair.substring(colonIdx + 1).trim().replaceAll("^\"|\"$", "");
+
+            switch (key) {
+                case "alpha":
+                    alpha = Double.parseDouble(value);
+                    break;
+                case "t0":
+                    t0 = Double.parseDouble(value);
+                    break;
+                case "saMax":
+                    saMax = Integer.parseInt(value);
+                    break;
+                case "maxIters":
+                    maxIters = Long.parseLong(value);
+                    break;
+            }
+        }
     }
 }

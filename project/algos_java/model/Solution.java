@@ -1,6 +1,7 @@
 package model;
 
 import java.io.*;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -136,12 +137,25 @@ public class Solution {
     }
 
     /**
-     * Writes the solution to a file.
+     * Writes the solution to a JSON file.
      *
      * @param filePath the output file path.
+     * @param execTime the execution time in seconds.
      * @throws IOException in case any IO error occurs.
      */
-    public void write(String filePath) throws IOException {
-
+    public void write(String filePath, double execTime) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        sb.append("{\"selected_orders\":[");
+        for (int i = 0; i < orders.size(); i++) {
+            if (i > 0) sb.append(",");
+            sb.append(orders.get(i));
+        }
+        sb.append("],\"visited_aisles\":[");
+        for (int i = 0; i < aisles.size(); i++) {
+            if (i > 0) sb.append(",");
+            sb.append(aisles.get(i));
+        }
+        sb.append("],\"exec_time\":").append(execTime).append("}");
+        Files.write(Paths.get(filePath), sb.toString().getBytes());
     }
 }

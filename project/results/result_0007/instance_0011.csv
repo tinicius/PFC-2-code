@@ -1,5 +1,0 @@
-algo_id,run_id,status,objective,items,aisles,exec_time
-spo_par_it,1,timeout_or_error,0.0,0,0,0.0
-spo_hybrid,1,feasible,13.904761904761905,2044,147,350.869
-spo_ref_lin,1,timeout_or_error,0.0,0,0,0.0
-spo_tabu,1,feasible,16.47826086956522,379,23,544.481
