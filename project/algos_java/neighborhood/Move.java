@@ -22,7 +22,7 @@ public abstract class Move {
     protected boolean intermediateState = false;
 
     protected int deltaObj = 0;
-    protected int initialCost = Integer.MAX_VALUE;
+    protected double initialCost = Integer.MAX_VALUE;
     protected int priority = 1;
 
     // basic statistics for future analysis
@@ -86,7 +86,7 @@ public abstract class Move {
      * @param solution the solution to be modified.
      * @return the impact (delta cost) of this move in the solution.
      */
-    public int doMove(Solution solution) {
+    public double doMove(Solution solution) {
         assert hasMove(solution) : "Error: move " + name + " being executed with hasMove() = false.";
         assert !intermediateState : "Error: calling doMove before mandatory call to accept() or reject().";
         intermediateState = true;

@@ -14,12 +14,13 @@ public class AddAisle extends Move {
         super(problem, random);
     }
 
-    public int doMove(Solution solution) {
+    public double doMove(Solution solution) {
         super.doMove(solution);
 
         List<Integer> available = new ArrayList<>();
+
         for (int i = 0; i < problem.nAisles; i++) {
-            if (!solution.hasAisle(i)) {
+            if (!solution.aisles.contains(i)) {
                 available.add(i);
             }
         }
@@ -30,13 +31,59 @@ public class AddAisle extends Move {
 
         addedAisle = available.get(random.nextInt(available.size()));
         savedState = solution.clone();
-        solution.addAisle(addedAisle);
+
+        solution.aisles.add(addedAisle);
+
+        final HashMap<Integer, Integer> actualStock = new HashMap<>();
+
+        solution.aisles.forEach(aisle -> {
+            problem.aisles.get(aisle).forEach((item, quantity) -> {
+                actualStock.put(item, quantity);
+            });
+        });
+
+        for (int orderIdx = 0; orderIdx < problem.nOrders; orderIdx++) {
+
+            if (solution.orders.contains(orderIdx)) {
+                continue;
+            }
+
+            // Check if the order can be fulfilled with the current aisles
+            boolean canFulfill = true;
+
+            for (Map.Entry<Integer, Integer> entry : problem.orders.get(orderIdx).entrySet()) {
+                int item = entry.getKey();
+                int quantity = entry.getValue();
+
+                int availableQuantity = actualStock.getOrDefault(item, 0);
+
+                if (availableQuantity < quantity) {
+                    canFulfill = false;
+                    break;
+                }
+            }
+
+            if (!canFulfill) {
+                continue;
+            }
+
+            // If the order can be fulfilled, add it to the solution
+            solution.orders.add(orderIdx);
+
+            for (Map.Entry<Integer, Integer> entry : problem.orders.get(orderIdx).entrySet()) {
+                int item = entry.getKey();
+                int quantity = entry.getValue();
+
+                actualStock.put(item, actualStock.get(item) - quantity);
+            }
+        }
+
         return solution.getObj() - initialCost;
     }
 
     @Override
     public boolean hasMove(Solution solution) {
-        return solution.getAisleCount() < problem.nAisles;
+        return solution.aisles.size() < problem.nAisles;
     }
 
     @Override

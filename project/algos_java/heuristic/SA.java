@@ -1,6 +1,5 @@
 package heuristic;
 
-
 import java.io.*;
 import java.util.*;
 
@@ -46,7 +45,8 @@ public class SA extends Heuristic {
      *
      * @param initialSolution the initial (input) solution.
      * @param timeLimitMillis the time limit (in milliseconds).
-     * @param maxIters        the maximum number of iterations without improvements to execute.
+     * @param maxIters        the maximum number of iterations without improvements
+     *                        to execute.
      * @param output          output PrintStream for logging purposes.
      * @return the best solution encountered by the SA.
      */
@@ -57,19 +57,21 @@ public class SA extends Heuristic {
         Solution solution = initialSolution.clone();
 
         double temperature = this.t0;
-        int nItersWithoutImprovement = 0;
+        // int nItersWithoutImprovement = 0;
         int itersInTemperature = 0;
 
         while (System.currentTimeMillis() < finalTimeMillis) {
-            Move move = selectMove(solution);
-            int delta = move.doMove(solution);
 
-            System.out.println("Current solution: " + solution.getObj() + ", Move delta: " + delta + ", Temperature: " + temperature);
+            Move move = selectMove(solution);
+            double delta = move.doMove(solution);
+
+            System.out.println("Current solution: " + solution.getObj() + ", Move delta: " + delta + ", Temperature: "
+                    + temperature);
 
             // if solution is improved...
             if (delta > 0) {
                 acceptMove(move);
-                nItersWithoutImprovement = 0;
+                // nItersWithoutImprovement = 0;
 
                 if (solution.getObj() > bestSolution.getObj()) {
                     bestSolution = solution.clone();
@@ -123,30 +125,28 @@ public class SA extends Heuristic {
         return String.format("Simulated Annealing (alpha=%.3f, saMax=%s, t0=%s)",
                 alpha, saMax, t0);
         // return String.format("Simulated Annealing (alpha=%.3f, saMax=%s, t0=%s)",
-        //   alpha, Util.longToString(saMax), Util.longToString(( long ) t0));
+        // alpha, Util.longToString(saMax), Util.longToString(( long ) t0));
     }
 
+    // private void estimateT0(Solution initialSolution, int nNeighbors, double ratio) {
+        // Solution solution = initialSolution.clone();
+        // List<Integer> neighborValues = new ArrayList<>(nNeighbors);
+        //
+        // for (int i = 0; i < nNeighbors; i++) {
+        // Move move = selectMove(solution);
+        // int delta = move.doMove(solution);
+        //
+        // neighborValues.add(delta);
+        // }
+        // neighborValues.sort(Integer::compare);
+        //
+        // int t = 1;
+        // int
+        //
+        // int idealDelta = neighborValues.get(( int ) (nNeighbors * ratio));
+        // 1/FastMath.log(delta / temperature);
+        //
+        // 1/ratio
+    // }
 
-    private void estimateT0(Solution initialSolution, int nNeighbors, double ratio) {
-        //Solution solution = initialSolution.clone();
-        //List<Integer> neighborValues = new ArrayList<>(nNeighbors);
-        //
-        //for (int i = 0; i < nNeighbors; i++) {
-        //    Move move = selectMove(solution);
-        //    int delta = move.doMove(solution);
-        //
-        //    neighborValues.add(delta);
-        //}
-        //neighborValues.sort(Integer::compare);
-        //
-        //int t = 1;
-        //int
-        //
-        //int idealDelta = neighborValues.get(( int ) (nNeighbors * ratio));
-        //1/FastMath.log(delta / temperature);
-        //
-        //1/ratio
-    }
-
-    
 }

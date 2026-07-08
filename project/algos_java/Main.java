@@ -37,7 +37,7 @@ public class Main {
 
         solution.validate(System.err);
         
-        System.out.printf("Best makespan.....: %d\n", solution.getObj());
+        System.out.printf("Best makespan.....: %f\n", solution.getObj());
         System.out.printf("N. of Iterations..: %d\n", solver.getNIters());
         System.out.printf("Total runtime.....: %.2fs\n", (System.currentTimeMillis() - startTimeMillis) / 1000.0);
     }
