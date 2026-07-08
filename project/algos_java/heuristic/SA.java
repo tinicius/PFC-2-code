@@ -60,19 +60,13 @@ public class SA extends Heuristic {
         // int nItersWithoutImprovement = 0;
         int itersInTemperature = 0;
 
-        final HashMap<String, Integer> moveStats = new HashMap<>();
-
         while (System.currentTimeMillis() < finalTimeMillis) {
 
             Move move = selectMove(solution);
-            if (move == null) break;
-
-            moveStats.put(move.name, moveStats.getOrDefault(move.name, 0) + 1);
+            if (move == null)
+                break;
 
             double delta = move.doMove(solution);
-
-            System.out.println(nIters + ": " + solution.getObj() + ", Move delta: " + delta + ", Temperature: "
-                    + temperature);
 
             // if solution is improved...
             if (delta > 0) {
@@ -82,7 +76,6 @@ public class SA extends Heuristic {
                 if (solution.getObj() > bestSolution.getObj()) {
                     bestSolution = solution.clone();
                     // Util.safePrintStatus(output, nIters, bestSolution, solution, "*");
-                    System.out.println("New best solution found: " + bestSolution.getObj());
                 }
             }
 
@@ -112,15 +105,10 @@ public class SA extends Heuristic {
                 if (temperature < EPS) {
                     temperature = t0;
                     // Util.safePrintText(output, "Re-heating Simulated Annealing", "");
-                    System.out.println("Re-heating Simulated Annealing");
                 }
             }
 
             nIters++;
-        }
-
-        for (Map.Entry<String, Integer> entry : moveStats.entrySet()) {
-            System.out.println("Move: " + entry.getKey() + ", Count: " + entry.getValue());
         }
 
         return bestSolution;
@@ -138,25 +126,26 @@ public class SA extends Heuristic {
         // alpha, Util.longToString(saMax), Util.longToString(( long ) t0));
     }
 
-    // private void estimateT0(Solution initialSolution, int nNeighbors, double ratio) {
-        // Solution solution = initialSolution.clone();
-        // List<Integer> neighborValues = new ArrayList<>(nNeighbors);
-        //
-        // for (int i = 0; i < nNeighbors; i++) {
-        // Move move = selectMove(solution);
-        // int delta = move.doMove(solution);
-        //
-        // neighborValues.add(delta);
-        // }
-        // neighborValues.sort(Integer::compare);
-        //
-        // int t = 1;
-        // int
-        //
-        // int idealDelta = neighborValues.get(( int ) (nNeighbors * ratio));
-        // 1/FastMath.log(delta / temperature);
-        //
-        // 1/ratio
+    // private void estimateT0(Solution initialSolution, int nNeighbors, double
+    // ratio) {
+    // Solution solution = initialSolution.clone();
+    // List<Integer> neighborValues = new ArrayList<>(nNeighbors);
+    //
+    // for (int i = 0; i < nNeighbors; i++) {
+    // Move move = selectMove(solution);
+    // int delta = move.doMove(solution);
+    //
+    // neighborValues.add(delta);
+    // }
+    // neighborValues.sort(Integer::compare);
+    //
+    // int t = 1;
+    // int
+    //
+    // int idealDelta = neighborValues.get(( int ) (nNeighbors * ratio));
+    // 1/FastMath.log(delta / temperature);
+    //
+    // 1/ratio
     // }
 
 }
