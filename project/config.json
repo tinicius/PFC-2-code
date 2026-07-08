@@ -27,6 +27,36 @@
   },
   "algorithms": [
     {
+      "id": "spo_par_it",
+      "binary": "spo_solver",
+      "params": {
+        "method": "par-it"
+      }
+    },
+    {
+      "id": "spo_ref_lin",
+      "binary": "spo_solver",
+      "params": {
+        "method": "ref-lin"
+      }
+    },
+    {
+      "id": "spo_hybrid",
+      "binary": "spo_solver",
+      "params": {
+        "method": "hybrid",
+        "partial-time": "210"
+      }
+    },
+    {
+      "id": "spo_tabu",
+      "binary": "spo_solver",
+      "params": {
+        "method": "tabu"
+      }
+    },
+
+    {
       "id": "simple_random_simple",
       "binary": "simple_heuristic",
       "params": {

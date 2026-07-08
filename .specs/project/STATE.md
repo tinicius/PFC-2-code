@@ -5,6 +5,8 @@
 | ID | Decision | Rationale | Date |
 | -- | -------- | --------- | ---- |
 | D001 | C++ binary uses CLI args (not stdin) for all parameters | Consistent with standard solver interfaces; easier to debug and log | 2026-07-03 |
+| D017 | Implementar algoritmos SPO em Java (andre_feijo) em vez de C++ | O código Java com CPLEX já está parcialmente implementado; migrar para C++ seria redundante no contexto do TCC | 2026-07-06 |
+| D018 | Feature spec `algoritmos-descritivos` cobre par-it, ref-lin, ItRL e TSHeuristic | Todos os 4 métodos do artigo precisam ser auditados e completados antes de integrar ao pipeline pfc2 | 2026-07-06 |
 | D002 | Algo_runner measures internal processing time, not orchestrator wall-clock | Excludes file I/O and instance loading from timing; user requirement | 2026-07-03 |
 | D003 | Instance content passed via `--input` string arg, not file path | Removes file I/O from C++ binary entirely; orchestrator owns all I/O | 2026-07-03 |
 | D004 | Validator is a Python module, not C++ | Faster iteration for evaluation logic changes; single source of truth | 2026-07-03 |
@@ -32,16 +34,19 @@
 ## Todos
 
 - [x] Create feature spec with requirement IDs
-- [x] Trigger discuss phase — captured in context.md
 - [x] Proceed to Design phase — design.md created
-- [x] Proceed to Tasks phase — tasks.md approved, 7 atomic tasks (T1-T7), 21/21 requirements mapped
-- [ ] Execute T1: Create skeleton directories
-- [ ] Execute T2: Implement algo_runner.cpp
-- [ ] Execute T3: Implement validator.py
-- [ ] Execute T4: Create config.example.json
-- [ ] Execute T5: Implement run_experiment.py
-- [ ] Execute T6: Create empty analyze_results.py
-- [ ] Execute T7: End-to-end smoke test
+- [x] Proceed to Tasks phase — tasks.md created, 11 atomic tasks (T1-T11)
+- [ ] Execute T1: Create C++ Project Skeleton & CMake
+- [ ] Execute T2: Implement Instance Parsing & I/O
+- [ ] Execute T3: Implement Preprocessing Reductions
+- [ ] Execute T4: Implement F(H) MILP Solver (`solve_f`)
+- [ ] Execute T5: Implement Iterative Parallel Method (`par-it`)
+- [ ] Execute T6: Implement Linear Reformulation (`ref-lin`)
+- [ ] Execute T7: Implement Binary Search (Fase 1 Tabu)
+- [ ] Execute T8: Implement Hybrid Method (`ItRL`)
+- [ ] Execute T9: Implement Tabu Search (`tabu_search`)
+- [ ] Execute T10: Implement CLI Dispatcher (`main.cpp`)
+- [ ] Execute T11: Integrate with Python Orchestrator
 
 ## Deferred Ideas
 

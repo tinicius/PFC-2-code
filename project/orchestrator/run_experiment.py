@@ -27,18 +27,32 @@ def worker(task):
     instance_path = os.path.join("/home/vinicius/Documents/CEFET/TCC/pfc2/datasets", dataset, instance)
         
     solution_path = os.path.join(result_dir, "temp", f"{instance}_{algo['id']}_{run_id}.json")
-    
-    cmd = [
-        os.path.join("project", "algos", "algo_runner"),
-        f"--binary={algo['binary']}",
-        f"--input={instance_path}",
-        f"--params={json.dumps(algo['params'])}",
-        f"--time-limit={time_limit}",
-        f"--seed={run_id}",
-        f"--output={solution_path}"
-    ]
-    for k, v in algo.get('params', {}).items():
-        cmd.append(f"--{k}={v}")
+
+    binary_name = algo.get('binary', 'algo_runner')
+    algo_dir = os.path.join("project", "algos")
+    binary_path = os.path.join(algo_dir, binary_name)
+
+    if binary_name == "spo_solver":
+        cmd = [
+            binary_path,
+            f"--input={instance_path}",
+            f"--output={solution_path}",
+            f"--time-limit={time_limit}",
+        ]
+        for k, v in algo.get('params', {}).items():
+            cmd.append(f"--{k}={v}")
+    else:
+        cmd = [
+            os.path.join(algo_dir, "algo_runner"),
+            f"--binary={binary_name}",
+            f"--input={instance_path}",
+            f"--params={json.dumps(algo['params'])}",
+            f"--time-limit={time_limit}",
+            f"--seed={run_id}",
+            f"--output={solution_path}"
+        ]
+        for k, v in algo.get('params', {}).items():
+            cmd.append(f"--{k}={v}")
     
     metrics = {
         "algo_id": algo['id'],

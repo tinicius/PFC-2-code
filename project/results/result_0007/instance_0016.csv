@@ -1,0 +1,5 @@
+algo_id,run_id,status,objective,items,aisles,exec_time
+spo_ref_lin,1,feasible,85.0,170,2,331.259
+spo_tabu,1,feasible,85.0,170,2,183.407
+spo_hybrid,1,feasible,85.0,170,2,474.177
+spo_par_it,1,feasible,50.2,502,10,629.785
