@@ -23,6 +23,12 @@ public class SA extends Heuristic {
     private final static double EPS = 1e-6;
 
     /**
+     * Threshold below which Math.exp(ratio) is negligibly small (~2e-9).
+     * Avoids expensive exp() call when acceptance is essentially impossible.
+     */
+    private final static double EXP_CUTOFF = -20.0;
+
+    /**
      * Instantiates a new SA.
      *
      * @param problem problem reference
@@ -57,45 +63,52 @@ public class SA extends Heuristic {
         Solution solution = initialSolution.clone();
 
         double temperature = this.t0;
-        // int nItersWithoutImprovement = 0;
+        long nItersWithoutImprovement = 0;
         int itersInTemperature = 0;
 
-        while (System.currentTimeMillis() < finalTimeMillis) {
+        while (nItersWithoutImprovement < maxIters) {
+
+            // Amortize system call: check time every 1024 iterations
+            if ((nIters & 0x3FF) == 0 && System.currentTimeMillis() >= finalTimeMillis)
+                break;
 
             Move move = selectMove(solution);
-            if (move == null)
-                break;
+            if (move == null) break;
 
             double delta = move.doMove(solution);
 
             // if solution is improved...
             if (delta > 0) {
                 acceptMove(move);
-                // nItersWithoutImprovement = 0;
 
                 if (solution.getObj() > bestSolution.getObj()) {
                     bestSolution = solution.clone();
-                    // Util.safePrintStatus(output, nIters, bestSolution, solution, "*");
+                    nItersWithoutImprovement = 0;
+                    if (output != null) {
+                        output.printf("Iter %d: New best = %.6f%n", nIters, bestSolution.getObj());
+                    }
+                } else {
+                    nItersWithoutImprovement++;
                 }
             }
 
             // if solution is not improved, but is accepted...
             else if (delta == 0) {
                 acceptMove(move);
+                nItersWithoutImprovement++;
             }
 
             // solution is not improved, but may be accepted with a probability...
             else {
-                double x = random.nextDouble();
+                double ratio = delta / temperature;
 
-                if (x < Math.exp(delta / temperature)) {
+                // Early reject: skip exp() when probability is negligible
+                if (ratio > EXP_CUTOFF && random.nextDouble() < Math.exp(ratio)) {
                     acceptMove(move);
-                }
-
-                // if solution is rejected..
-                else {
+                } else {
                     rejectMove(move);
                 }
+                nItersWithoutImprovement++;
             }
 
             // if necessary, updates temperature
@@ -104,11 +117,22 @@ public class SA extends Heuristic {
                 temperature = alpha * temperature;
                 if (temperature < EPS) {
                     temperature = t0;
-                    // Util.safePrintText(output, "Re-heating Simulated Annealing", "");
+                    if (output != null) {
+                        output.println("Re-heating Simulated Annealing");
+                    }
                 }
             }
 
             nIters++;
+        }
+
+        // Print move statistics using built-in Move counters (no extra HashMap needed)
+        if (output != null) {
+            for (Move move : moves) {
+                output.printf("Move: %s, Iters: %d, Improvements: %d, Sideways: %d, Worsens: %d, Rejects: %d%n",
+                        move.name, move.getNIters(), move.getNImprovements(),
+                        move.getNSideways(), move.getNWorsens(), move.getNRejects());
+            }
         }
 
         return bestSolution;
@@ -122,30 +146,5 @@ public class SA extends Heuristic {
     public String toString() {
         return String.format("Simulated Annealing (alpha=%.3f, saMax=%s, t0=%s)",
                 alpha, saMax, t0);
-        // return String.format("Simulated Annealing (alpha=%.3f, saMax=%s, t0=%s)",
-        // alpha, Util.longToString(saMax), Util.longToString(( long ) t0));
     }
-
-    // private void estimateT0(Solution initialSolution, int nNeighbors, double
-    // ratio) {
-    // Solution solution = initialSolution.clone();
-    // List<Integer> neighborValues = new ArrayList<>(nNeighbors);
-    //
-    // for (int i = 0; i < nNeighbors; i++) {
-    // Move move = selectMove(solution);
-    // int delta = move.doMove(solution);
-    //
-    // neighborValues.add(delta);
-    // }
-    // neighborValues.sort(Integer::compare);
-    //
-    // int t = 1;
-    // int
-    //
-    // int idealDelta = neighborValues.get(( int ) (nNeighbors * ratio));
-    // 1/FastMath.log(delta / temperature);
-    //
-    // 1/ratio
-    // }
-
 }

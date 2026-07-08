@@ -1,2 +1,2 @@
 Dataset,Algoritmo,Total Runs,Gap media + DP,Tempo media + DP
-a,sa,100,0.5609 +- 0.2495,60.1284 +- 0.0588
+a,sa,80,0.2562 +- 0.2397,60.2495 +- 0.1932

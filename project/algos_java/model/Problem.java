@@ -34,6 +34,11 @@ public class Problem {
     public final List<HashMap<Integer, Integer>> aisles;
 
     /**
+     * Pre-computed total units per order (avoids recomputing on every move).
+     */
+    public final int[] orderUnits;
+
+    /**
      * Instantiates a new Problem from a file.
      *
      * @param instancePath the instance file path
@@ -91,5 +96,15 @@ public class Problem {
 
         lb = Integer.parseInt(wave[0]);
         ub = Integer.parseInt(wave[1]);
+
+        // Pre-compute total units per order
+        orderUnits = new int[nOrders];
+        for (int i = 0; i < nOrders; i++) {
+            int total = 0;
+            for (int qty : orders.get(i).values()) {
+                total += qty;
+            }
+            orderUnits[i] = total;
+        }
     }
 }

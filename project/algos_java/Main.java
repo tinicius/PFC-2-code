@@ -39,7 +39,7 @@ public class Main {
         if ("sa".equals(algo)) {
             Heuristic solver = new SA(problem, random, alpha, t0, saMax);
             Move addAisle = new AddAisle(problem, random, "AddAisle");
-            addAisle.setPriority(3);
+            addAisle.setPriority(2);
             solver.addMove(addAisle);
             Move removeAisle = new RemoveAisle(problem, random, "RemoveAisle");
             removeAisle.setPriority(1);

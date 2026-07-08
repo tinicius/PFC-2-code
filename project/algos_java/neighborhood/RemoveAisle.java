@@ -24,66 +24,20 @@ public class RemoveAisle extends Move {
         removedAisle = solution.aisles.get(random.nextInt(solution.aisles.size()));
         savedState = solution.clone();
 
-        solution.aisles.remove((Integer) removedAisle);
+        // Incremental aisle removal updates stock via int[] array
+        solution.removeAisle(removedAisle);
 
-        final HashMap<Integer, Integer> actualStock = new HashMap<>();
+        // Greedy rebuild uses pre-allocated work buffer and cached orderUnits
+        solution.greedyRebuildOrders();
 
-        solution.aisles.forEach(aisle -> {
-            problem.aisles.get(aisle).forEach((item, quantity) -> {
-                actualStock.merge(item, quantity, Integer::sum);
-            });
-        });
-
-        solution.orders.clear();
-
-        int totalPicked = 0;
-
-        for (int orderIdx = 0; orderIdx < problem.nOrders; orderIdx++) {
-            // Check if the order can be fulfilled with the current aisles
-            boolean canFulfill = true;
-
-            for (Map.Entry<Integer, Integer> entry : problem.orders.get(orderIdx).entrySet()) {
-                int item = entry.getKey();
-                int quantity = entry.getValue();
-
-                int availableQuantity = actualStock.getOrDefault(item, 0);
-
-                if (availableQuantity < quantity) {
-                    canFulfill = false;
-                    break;
-                }
-            }
-
-            if (!canFulfill) {
-                continue;
-            }
-
-            // Check if adding this order would exceed the upper bound
-            int orderUnits = 0;
-            for (int quantity : problem.orders.get(orderIdx).values()) {
-                orderUnits += quantity;
-            }
-            if (totalPicked + orderUnits > problem.ub) {
-                continue;
-            }
-
-            // If the order can be fulfilled, add it to the solution
-            solution.orders.add(orderIdx);
-            totalPicked += orderUnits;
-
-            for (Map.Entry<Integer, Integer> entry : problem.orders.get(orderIdx).entrySet()) {
-                int item = entry.getKey();
-                int quantity = entry.getValue();
-
-                actualStock.merge(item, -quantity, Integer::sum);
-            }
-        }
-
-        if (totalPicked < problem.lb) {
+        if (solution.getTotalItemsPicked() < problem.lb) {
+            deltaObj = -1;
             return -(Math.abs(initialCost) + 1);
         }
 
-        return solution.getObj() - initialCost;
+        double delta = solution.getObj() - initialCost;
+        deltaObj = (delta > 0) ? 1 : (delta == 0) ? 0 : -1;
+        return delta;
     }
 
     @Override

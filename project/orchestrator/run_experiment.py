@@ -52,6 +52,9 @@ def worker(task):
         "aisles": 0,
         "exec_time": 0.0
     }
+    
+    # print(cmd)
+    # return
         
     try:
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=time_limit + 30)
@@ -101,16 +104,16 @@ def main():
     # Compile Java code if needed
     java_dir = "project/algos_java"
     main_class = os.path.join(java_dir, "Main.class")
-    if not os.path.exists(main_class):
-        print("Compiling Java code...")
-        subprocess.run(
-            ["javac", "-d", ".",
-             "Main.java",
-             "heuristic/Heuristic.java", "heuristic/SA.java",
-             "model/Problem.java", "model/Solution.java",
-             "neighborhood/Move.java", "neighborhood/AddAisle.java", "neighborhood/RemoveAisle.java"],
-            cwd=java_dir, check=True
-        )
+    # if not os.path.exists(main_class):
+    print("Compiling Java code...")
+    subprocess.run(
+        ["javac", "-d", ".",
+            "Main.java",
+            "heuristic/Heuristic.java", "heuristic/SA.java",
+            "model/Problem.java", "model/Solution.java",
+            "neighborhood/Move.java", "neighborhood/AddAisle.java", "neighborhood/RemoveAisle.java"],
+        cwd=java_dir, check=True
+    )
 
     tasks = []
     for dataset, instances in config['datasets'].items():

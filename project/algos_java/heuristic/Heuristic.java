@@ -29,6 +29,11 @@ public abstract class Heuristic {
     protected long nIters = 0;
 
     /**
+     * Pre-allocated buffer for selectMove to avoid per-call allocation.
+     */
+    private final Move[] availableBuf = new Move[64];
+
+    /**
      * Instantiates a new Heuristic.
      *
      * @param problem the problem reference.
@@ -95,29 +100,30 @@ public abstract class Heuristic {
     public abstract Solution run(Solution solution, long timeLimitMillis, long maxIters, PrintStream output);
 
     /**
-     * Selects move.
+     * Selects move using a pre-allocated buffer (zero allocation).
      *
      * @param solution the solution
      * @return a randomly selected move (neighborhood), considering the provided
      *         weights.
      */
     protected Move selectMove(Solution solution) {
-        List<Move> available = new ArrayList<>();
+        int count = 0;
         int totalWeight = 0;
-        for (Move move : moves) {
+        for (int i = 0, n = moves.size(); i < n; i++) {
+            Move move = moves.get(i);
             if (move.hasMove(solution)) {
-                available.add(move);
+                availableBuf[count++] = move;
                 totalWeight += move.getPriority();
             }
         }
-        if (available.isEmpty()) return null;
+        if (count == 0) return null;
         int r = random.nextInt(totalWeight);
         int cumulative = 0;
-        for (Move move : available) {
-            cumulative += move.getPriority();
-            if (r < cumulative) return move;
+        for (int i = 0; i < count; i++) {
+            cumulative += availableBuf[i].getPriority();
+            if (r < cumulative) return availableBuf[i];
         }
-        return available.get(available.size() - 1);
+        return availableBuf[count - 1];
     }
 
     // region getters and setters
