@@ -1,2 +1,6 @@
 Dataset,Algoritmo,Total Runs,Gap media + DP,Tempo media + DP
+a,aisle_first_useful,100,0.1468 +- 0.1806,0.1931 +- 0.1352
+a,aisle_first_variety,100,0.1909 +- 0.2015,0.1847 +- 0.1420
+a,aisle_first_mixed,100,0.2031 +- 0.2228,0.1720 +- 0.1102
 a,sa,80,0.2562 +- 0.2397,60.2495 +- 0.1932
+a,aisle_first_units,100,0.3608 +- 0.2307,0.1962 +- 0.1411

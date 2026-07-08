@@ -1,6 +1,9 @@
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
+import constructive.AisleFirst;
 import heuristic.Heuristic;
 import heuristic.SA;
 import model.Problem;
@@ -22,6 +25,7 @@ public class Main {
     public static double alpha = 0.95;
     public static double t0 = 1000.0;
     public static int saMax = 10000;
+    public static String score = "useful";
 
     public static void main(String[] args) throws IOException {
         if (!readArgs(args)) {
@@ -47,6 +51,12 @@ public class Main {
 
             if (solver.getMoves().size() > 0)
                 solution = solver.run(solution, timeLimit, maxIters, System.out);
+        }
+        else if ("aisle_first".equals(algo)) {
+            Map<String, String> params = new HashMap<>();
+            params.put("score", score);
+            AisleFirst solver = new AisleFirst(params);
+            solution = solver.solve(problem);
         }
         else {
             System.err.println("Unknown algorithm: " + algo);
@@ -124,6 +134,9 @@ public class Main {
                     break;
                 case "maxIters":
                     maxIters = Long.parseLong(value);
+                    break;
+                case "score":
+                    score = value;
                     break;
             }
         }
