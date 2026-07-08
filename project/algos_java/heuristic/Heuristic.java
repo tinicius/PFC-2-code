@@ -102,12 +102,13 @@ public abstract class Heuristic {
      *         weights.
      */
     protected Move selectMove(Solution solution) {
-        Move move = moves.get(random.nextInt(moves.size()));
+        for (int i = 0; i < moves.size() * 2; i++) {
+            Move move = moves.get(random.nextInt(moves.size()));
+            if (move.hasMove(solution))
+                return move;
+        }
         
-        while (!move.hasMove(solution))
-            move = moves.get(random.nextInt(moves.size()));
-        
-        return move;
+        return null;
     }
 
     // region getters and setters

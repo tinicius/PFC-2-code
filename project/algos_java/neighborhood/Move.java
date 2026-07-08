@@ -38,10 +38,10 @@ public abstract class Move {
      * @param problem the problem reference.
      * @param random  the random number generator.
      */
-    public Move(Problem problem, Random random) {
+    public Move(Problem problem, Random random, String name) {
         this.problem = problem;
         this.random = random;
-        this.name = "";
+        this.name = name;
     }
 
     /**

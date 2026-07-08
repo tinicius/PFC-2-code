@@ -60,12 +60,18 @@ public class SA extends Heuristic {
         // int nItersWithoutImprovement = 0;
         int itersInTemperature = 0;
 
+        final HashMap<String, Integer> moveStats = new HashMap<>();
+
         while (System.currentTimeMillis() < finalTimeMillis) {
 
             Move move = selectMove(solution);
+            if (move == null) break;
+
+            moveStats.put(move.name, moveStats.getOrDefault(move.name, 0) + 1);
+
             double delta = move.doMove(solution);
 
-            System.out.println("Current solution: " + solution.getObj() + ", Move delta: " + delta + ", Temperature: "
+            System.out.println(nIters + ": " + solution.getObj() + ", Move delta: " + delta + ", Temperature: "
                     + temperature);
 
             // if solution is improved...
@@ -111,6 +117,10 @@ public class SA extends Heuristic {
             }
 
             nIters++;
+        }
+
+        for (Map.Entry<String, Integer> entry : moveStats.entrySet()) {
+            System.out.println("Move: " + entry.getKey() + ", Count: " + entry.getValue());
         }
 
         return bestSolution;

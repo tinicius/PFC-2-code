@@ -5,34 +5,26 @@ import java.util.*;
 import model.Problem;
 import model.Solution;
 
-public class AddAisle extends Move {
+public class RemoveAisle extends Move {
 
-    private int addedAisle = -1;
+    private int removedAisle = -1;
     private Solution savedState;
 
-    public AddAisle(Problem problem, Random random, String name) {
+    public RemoveAisle(Problem problem, Random random, String name) {
         super(problem, random, name);
     }
 
     public double doMove(Solution solution) {
         super.doMove(solution);
 
-        List<Integer> available = new ArrayList<>();
-
-        for (int i = 0; i < problem.nAisles; i++) {
-            if (!solution.aisles.contains(i)) {
-                available.add(i);
-            }
-        }
-
-        if (available.isEmpty()) {
+        if (solution.aisles.isEmpty()) {
             return 0;
         }
 
-        addedAisle = available.get(random.nextInt(available.size()));
+        removedAisle = solution.aisles.get(random.nextInt(solution.aisles.size()));
         savedState = solution.clone();
 
-        solution.aisles.add(addedAisle);
+        solution.aisles.remove((Integer) removedAisle);
 
         final HashMap<Integer, Integer> actualStock = new HashMap<>();
 
@@ -85,13 +77,13 @@ public class AddAisle extends Move {
 
     @Override
     public boolean hasMove(Solution solution) {
-        return solution.aisles.size() < problem.nAisles;
+        return solution.aisles.size() > 0;
     }
 
     @Override
     public void accept() {
         savedState = null;
-        addedAisle = -1;
+        removedAisle = -1;
         super.accept();
     }
 
@@ -100,7 +92,7 @@ public class AddAisle extends Move {
         if (savedState != null) {
             currentSolution.restoreFrom(savedState);
             savedState = null;
-            addedAisle = -1;
+            removedAisle = -1;
         }
         super.reject();
     }

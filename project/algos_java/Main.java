@@ -6,6 +6,7 @@ import heuristic.SA;
 import model.Problem;
 import model.Solution;
 import neighborhood.AddAisle;
+import neighborhood.RemoveAisle;
 
 public class Main {
 
@@ -29,7 +30,8 @@ public class Main {
 
         Heuristic solver = new SA(problem, random, 0.95, 1000.0, 10000);
 
-        solver.addMove(new AddAisle(problem, random));
+        solver.addMove(new AddAisle(problem, random, "AddAisle"));
+        solver.addMove(new RemoveAisle(problem, random, "RemoveAisle"));
 
         // running stochastic local search
         if (solver.getMoves().size() > 0)
