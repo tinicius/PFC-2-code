@@ -6,6 +6,7 @@ import heuristic.SA;
 import model.Problem;
 import model.Solution;
 import neighborhood.AddAisle;
+import neighborhood.Move;
 import neighborhood.RemoveAisle;
 
 public class Main {
@@ -37,8 +38,12 @@ public class Main {
 
         if ("sa".equals(algo)) {
             Heuristic solver = new SA(problem, random, alpha, t0, saMax);
-            solver.addMove(new AddAisle(problem, random, "AddAisle"));
-            solver.addMove(new RemoveAisle(problem, random, "RemoveAisle"));
+            Move addAisle = new AddAisle(problem, random, "AddAisle");
+            addAisle.setPriority(3);
+            solver.addMove(addAisle);
+            Move removeAisle = new RemoveAisle(problem, random, "RemoveAisle");
+            removeAisle.setPriority(1);
+            solver.addMove(removeAisle);
 
             if (solver.getMoves().size() > 0)
                 solution = solver.run(solution, timeLimit, maxIters, System.out);

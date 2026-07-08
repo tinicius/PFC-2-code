@@ -7,6 +7,8 @@ import glob
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 from collections import defaultdict
+import random
+from datetime import datetime
 
 # Need to import validator dynamically or use subprocess. Let's just run it or import it.
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "validator"))
@@ -36,7 +38,7 @@ def worker(task):
         f"--input={instance_path}",
         f"--output={solution_path}",
         f"--time-limit={time_limit}",
-        f"--seed={run_id}",
+        f"--seed={random.randint(1, 100000)}",
         f"--algo={algo_name}",
         f"--params={json.dumps(algo.get('params', {}))}",
     ]
@@ -50,9 +52,9 @@ def worker(task):
         "aisles": 0,
         "exec_time": 0.0
     }
-    
+        
     try:
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=time_limit)
+        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=time_limit + 30)
         if proc.stderr:
             print(proc.stderr, file=sys.stderr)
             
@@ -128,6 +130,9 @@ def main():
     
     total = len(tasks)
     n_workers = config.get('n_workers', 4)
+    now = datetime.now()
+
+    print(f"Starting At: {now.strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"Starting {total} tasks with {n_workers} workers...")
     with ProcessPoolExecutor(max_workers=n_workers) as executor:
         futures = [executor.submit(worker, t) for t in tasks]

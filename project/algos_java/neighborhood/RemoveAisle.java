@@ -30,18 +30,15 @@ public class RemoveAisle extends Move {
 
         solution.aisles.forEach(aisle -> {
             problem.aisles.get(aisle).forEach((item, quantity) -> {
-                actualStock.put(item, quantity);
+                actualStock.merge(item, quantity, Integer::sum);
             });
         });
 
         solution.orders.clear();
 
+        int totalPicked = 0;
+
         for (int orderIdx = 0; orderIdx < problem.nOrders; orderIdx++) {
-
-            if (solution.orders.contains(orderIdx)) {
-                continue;
-            }
-
             // Check if the order can be fulfilled with the current aisles
             boolean canFulfill = true;
 
@@ -61,15 +58,29 @@ public class RemoveAisle extends Move {
                 continue;
             }
 
+            // Check if adding this order would exceed the upper bound
+            int orderUnits = 0;
+            for (int quantity : problem.orders.get(orderIdx).values()) {
+                orderUnits += quantity;
+            }
+            if (totalPicked + orderUnits > problem.ub) {
+                continue;
+            }
+
             // If the order can be fulfilled, add it to the solution
             solution.orders.add(orderIdx);
+            totalPicked += orderUnits;
 
             for (Map.Entry<Integer, Integer> entry : problem.orders.get(orderIdx).entrySet()) {
                 int item = entry.getKey();
                 int quantity = entry.getValue();
 
-                actualStock.put(item, actualStock.get(item) - quantity);
+                actualStock.merge(item, -quantity, Integer::sum);
             }
+        }
+
+        if (totalPicked < problem.lb) {
+            return -(Math.abs(initialCost) + 1);
         }
 
         return solution.getObj() - initialCost;

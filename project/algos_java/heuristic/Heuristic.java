@@ -102,13 +102,22 @@ public abstract class Heuristic {
      *         weights.
      */
     protected Move selectMove(Solution solution) {
-        for (int i = 0; i < moves.size() * 2; i++) {
-            Move move = moves.get(random.nextInt(moves.size()));
-            if (move.hasMove(solution))
-                return move;
+        List<Move> available = new ArrayList<>();
+        int totalWeight = 0;
+        for (Move move : moves) {
+            if (move.hasMove(solution)) {
+                available.add(move);
+                totalWeight += move.getPriority();
+            }
         }
-        
-        return null;
+        if (available.isEmpty()) return null;
+        int r = random.nextInt(totalWeight);
+        int cumulative = 0;
+        for (Move move : available) {
+            cumulative += move.getPriority();
+            if (r < cumulative) return move;
+        }
+        return available.get(available.size() - 1);
     }
 
     // region getters and setters

@@ -1,0 +1,2 @@
+algo_id,run_id,status,objective,items,aisles,exec_time
+sa,1,timeout_or_error,0.0,0,0,0.0
