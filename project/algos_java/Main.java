@@ -1,6 +1,4 @@
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 import constructive.AisleFirst;
@@ -42,9 +40,7 @@ public class Main {
 
         if ("sa".equals(algo)) {
             // Seed SA with AisleFirst solution
-            Map<String, String> params = new HashMap<>();
-            params.put("score", score);
-            AisleFirst constructor = new AisleFirst(params);
+            AisleFirst constructor = new AisleFirst();
             solution = constructor.solve(problem);
 
             Heuristic solver = new SA(problem, random, alpha, t0, saMax);
@@ -76,9 +72,7 @@ public class Main {
                 solution = solver.run(solution, timeLimit, maxIters, System.out);
         }
         else if ("aisle_first".equals(algo)) {
-            Map<String, String> params = new HashMap<>();
-            params.put("score", score);
-            AisleFirst solver = new AisleFirst(params);
+            AisleFirst solver = new AisleFirst();
             solution = solver.solve(problem);
         }
         else {

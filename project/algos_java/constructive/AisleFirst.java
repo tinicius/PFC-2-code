@@ -7,18 +7,10 @@ import java.util.*;
 
 public class AisleFirst {
 
-    private final String score;
-
-    public AisleFirst(Map<String, String> params) {
-        this.score = params.getOrDefault("score", "useful");
-
-        Set<String> validScore = new HashSet<>(Arrays.asList("useful", "units", "variety", "mixed"));
-        if (!validScore.contains(this.score)) {
-            throw new IllegalArgumentException("AisleFirstDesc: invalid 'score'=" + this.score);
-        }
+    public AisleFirst() {
     }
 
-    private double aisleScore(int idx, Problem problem, Map<Integer, Integer> totalDemand) {
+    private double aisleScore(int idx, Problem problem, Map<Integer, Integer> totalDemand, String score) {
         Map<Integer, Integer> aisle = problem.aisles.get(idx);
         if ("useful".equals(score)) {
             double val = 0.0;
@@ -52,7 +44,7 @@ public class AisleFirst {
         return 0.0;
     }
 
-    private List<Integer> rankAisles(Problem problem, Map<Integer, Integer> totalDemand) {
+    private List<Integer> rankAisles(Problem problem, Map<Integer, Integer> totalDemand, String score) {
         List<Integer> indices = new ArrayList<>(problem.nAisles);
         for (int i = 0; i < problem.nAisles; i++) {
             indices.add(i);
@@ -60,7 +52,7 @@ public class AisleFirst {
 
         double[] scores = new double[problem.nAisles];
         for (int i = 0; i < problem.nAisles; i++) {
-            scores[i] = aisleScore(i, problem, totalDemand);
+            scores[i] = aisleScore(i, problem, totalDemand, score);
         }
 
         indices.sort((a, b) -> Double.compare(scores[b], scores[a]));
@@ -115,6 +107,58 @@ public class AisleFirst {
         }
     }
 
+    private List<Integer> pruneAisles(
+            Problem problem,
+            List<Integer> selectedAisles,
+            List<Integer> selectedOrders) {
+
+        Set<Integer> remaining = new LinkedHashSet<>(selectedAisles);
+
+        // Pre-sort orders by size descending (same order used by packOrders)
+        List<Integer> orderSeq = new ArrayList<>(selectedOrders);
+        orderSeq.sort((a, b) -> Integer.compare(problem.orderUnits[b], problem.orderUnits[a]));
+
+        boolean changed = true;
+        while (changed) {
+            changed = false;
+            List<Integer> current = new ArrayList<>(remaining);
+            for (int aisle : current) {
+                // Build inventory from remaining aisles except this one
+                Map<Integer, Integer> inv = new HashMap<>();
+                for (int a : remaining) {
+                    if (a == aisle) continue;
+                    for (Map.Entry<Integer, Integer> e : problem.aisles.get(a).entrySet()) {
+                        inv.put(e.getKey(), inv.getOrDefault(e.getKey(), 0) + e.getValue());
+                    }
+                }
+
+                // Check every selected order against reduced inventory
+                Map<Integer, Integer> temp = new HashMap<>(inv);
+                boolean ok = true;
+                for (int idx : orderSeq) {
+                    Map<Integer, Integer> order = problem.orders.get(idx);
+                    for (Map.Entry<Integer, Integer> e : order.entrySet()) {
+                        if (temp.getOrDefault(e.getKey(), 0) < e.getValue()) {
+                            ok = false;
+                            break;
+                        }
+                    }
+                    if (!ok) break;
+                    for (Map.Entry<Integer, Integer> e : order.entrySet()) {
+                        temp.put(e.getKey(), temp.get(e.getKey()) - e.getValue());
+                    }
+                }
+
+                if (ok) {
+                    remaining.remove(aisle);
+                    changed = true;
+                    break; // restart scan since set changed
+                }
+            }
+        }
+        return new ArrayList<>(remaining);
+    }
+
     public Solution solve(Problem problem) {
         if (problem.nOrders == 0 || problem.nAisles == 0) {
             return new Solution(problem);
@@ -128,9 +172,6 @@ public class AisleFirst {
             }
         }
 
-        // Rank aisles descending by score
-        List<Integer> rankedAisles = rankAisles(problem, totalDemand);
-
         // Order sequence: descending by size
         List<Integer> sequence = buildSequence(problem);
 
@@ -138,32 +179,39 @@ public class AisleFirst {
         List<Integer> bestAisles = new ArrayList<>();
         double bestObj = 0.0;
 
-        Map<Integer, Integer> inventory = new HashMap<>();
-        int k = 0;
-        for (int aisleIdx : rankedAisles) {
-            k++;
+        String[] scores = {"useful", "units", "variety", "mixed"};
 
-            // Accumulate inventory
-            for (Map.Entry<Integer, Integer> entry : problem.aisles.get(aisleIdx).entrySet()) {
-                inventory.put(entry.getKey(), inventory.getOrDefault(entry.getKey(), 0) + entry.getValue());
+        for (String score : scores) {
+            List<Integer> rankedAisles = rankAisles(problem, totalDemand, score);
+
+            Map<Integer, Integer> inventory = new HashMap<>();
+            int k = 0;
+            for (int aisleIdx : rankedAisles) {
+                k++;
+
+                for (Map.Entry<Integer, Integer> entry : problem.aisles.get(aisleIdx).entrySet()) {
+                    inventory.put(entry.getKey(), inventory.getOrDefault(entry.getKey(), 0) + entry.getValue());
+                }
+
+                if ((double) problem.ub / k <= bestObj) break;
+
+                List<Integer> selected = new ArrayList<>();
+                int[] totalUnits = new int[]{0};
+                packOrders(sequence, problem, new HashMap<>(inventory), selected, totalUnits);
+
+                if (totalUnits[0] < problem.lb) continue;
+
+                double obj = (double) totalUnits[0] / k;
+                if (obj > bestObj) {
+                    bestObj = obj;
+                    bestOrders = new ArrayList<>(selected);
+                    bestAisles = new ArrayList<>(rankedAisles.subList(0, k));
+                }
             }
+        }
 
-            // Early stop: ub/k can't beat bestObj
-            if ((double) problem.ub / k <= bestObj) break;
-
-            // Pack orders against current inventory
-            List<Integer> selected = new ArrayList<>();
-            int[] totalUnits = new int[]{0};
-            packOrders(sequence, problem, new HashMap<>(inventory), selected, totalUnits);
-
-            if (totalUnits[0] < problem.lb) continue;
-
-            double obj = (double) totalUnits[0] / k;
-            if (obj > bestObj) {
-                bestObj = obj;
-                bestOrders = new ArrayList<>(selected);
-                bestAisles = new ArrayList<>(rankedAisles.subList(0, k));
-            }
+        if (!bestOrders.isEmpty()) {
+            bestAisles = pruneAisles(problem, bestAisles, bestOrders);
         }
 
         Solution sol = new Solution(problem);

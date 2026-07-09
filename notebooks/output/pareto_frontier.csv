@@ -1,2 +1,5 @@
 dataset,algo_id,gap_media,tempo_media,pareto
-a,sa,0.2562335650113666,60.2495125,True
+a,aisle_first_mixed,0.07906328154164259,0.30102,True
+a,aisle_first_units,0.07906328154164259,0.30732,False
+a,aisle_first_useful,0.07906328154164259,0.32536000000000004,False
+a,aisle_first_variety,0.07906328154164259,0.31703,False
