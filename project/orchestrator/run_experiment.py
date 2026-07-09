@@ -29,7 +29,7 @@ def worker(task):
     datasets_dir = Path(__file__).resolve().parent.parent.parent / "datasets"
     instance_path = str(datasets_dir / dataset / instance)
         
-    solution_path = os.path.join(result_dir, "temp", f"{instance}_{algo['id']}_{run_id}.json")
+    solution_path = os.path.join(result_dir, "temp", f"{dataset}_{instance}_{algo['id']}_{run_id}.json")
 
     algo_name = algo.get('binary', 'sa')
     java_dir = "project/algos_java"
@@ -71,11 +71,12 @@ def worker(task):
             # Validate
             if 'validator' in globals():
                 val_res = validator.validate(instance_path, solution_path)
+                val_res.pop('message', None)  # diagnostic-only field, not stored
                 metrics.update(val_res)
     except Exception as e:
         metrics["status"] = "timeout_or_error"
         
-    return instance, metrics
+    return dataset, instance, metrics
 
 def main():
     if len(sys.argv) != 2:
@@ -133,7 +134,7 @@ def main():
                         'result_dir': result_dir
                     })
                     
-    results_by_instance = defaultdict(list)
+    results_by_instance = defaultdict(lambda: defaultdict(list))
     
     total = len(tasks)
     n_workers = config.get('n_workers', 4)
@@ -144,19 +145,25 @@ def main():
     with ProcessPoolExecutor(max_workers=n_workers) as executor:
         futures = [executor.submit(worker, t) for t in tasks]
         for completed, future in enumerate(as_completed(futures), start=1):
-            instance, metrics = future.result()
-            results_by_instance[instance].append(metrics)
-            print(f"[{completed}/{total}] {instance} - {metrics['algo_id']} (run {metrics['run_id']}) -> {metrics['status']}")
+            dataset, instance, metrics = future.result()
+            results_by_instance[dataset][instance].append(metrics)
+            print(f"[{completed}/{total}] {dataset}/{instance} - {metrics['algo_id']} (run {metrics['run_id']}) -> {metrics['status']}")
             
-    for instance, metrics_list in results_by_instance.items():
-        csv_path = os.path.join(result_dir, f"{instance.replace('.txt', '')}.csv")
-        with open(csv_path, "w") as f:
-            headers = ["algo_id", "run_id", "status", "objective", "items", "aisles", "exec_time"]
-            f.write(",".join(headers) + "\n")
-            for m in metrics_list:
-                f.write(",".join(str(m.get(h, "")) for h in headers) + "\n")
+    for dataset, instances in results_by_instance.items():
+        dataset_dir = os.path.join(result_dir, dataset)
+        os.makedirs(dataset_dir, exist_ok=True)
+        for instance, metrics_list in instances.items():
+            csv_path = os.path.join(dataset_dir, f"{instance.replace('.txt', '')}.csv")
+            with open(csv_path, "w") as f:
+                headers = ["algo_id", "run_id", "status", "objective", "items", "aisles", "exec_time"]
+                f.write(",".join(headers) + "\n")
+                for m in metrics_list:
+                    f.write(",".join(str(m.get(h, "")) for h in headers) + "\n")
                 
-    print(f"Summary: Completed {len(tasks)} tasks across {len(results_by_instance)} instances. Results in {result_dir}")
+    # Clean up temp solution files
+    shutil.rmtree(temp_dir, ignore_errors=True)
+
+    print(f"Summary: Completed {len(tasks)} tasks across {sum(len(v) for v in results_by_instance.values())} instances. Results in {result_dir}")
 
 if __name__ == "__main__":
     main()

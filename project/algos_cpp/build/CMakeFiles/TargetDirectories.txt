@@ -1,3 +1,0 @@
-/home/vinicius/Documents/CEFET/TCC/pfc2/project/algos/build/CMakeFiles/algo_runner.dir
-/home/vinicius/Documents/CEFET/TCC/pfc2/project/algos/build/CMakeFiles/edit_cache.dir
-/home/vinicius/Documents/CEFET/TCC/pfc2/project/algos/build/CMakeFiles/rebuild_cache.dir

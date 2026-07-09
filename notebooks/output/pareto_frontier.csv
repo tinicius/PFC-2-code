@@ -1,5 +1,4 @@
-dataset,algo_id,gap_media,tempo_media,pareto
-a,aisle_first_mixed,0.07906328154164259,0.30102,True
-a,aisle_first_units,0.07906328154164259,0.30732,False
-a,aisle_first_useful,0.07906328154164259,0.32536000000000004,False
-a,aisle_first_variety,0.07906328154164259,0.31703,False
+dataset,algo_id,pct_media,tempo_media,pareto
+a,aisle_first,93.85068629804387,0.33692,True
+b,aisle_first,97.8402582773395,0.70192,True
+x,aisle_first,98.02130308911694,0.8212799999999999,True

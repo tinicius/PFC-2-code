@@ -1,3 +1,0 @@
-/home/vinicius/Documents/CEFET/TCC/pfc2/project/algos/spo/build/CMakeFiles/spo_solver.dir
-/home/vinicius/Documents/CEFET/TCC/pfc2/project/algos/spo/build/CMakeFiles/edit_cache.dir
-/home/vinicius/Documents/CEFET/TCC/pfc2/project/algos/spo/build/CMakeFiles/rebuild_cache.dir
