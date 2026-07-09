@@ -1,6 +1,0 @@
-algo_id,run_id,status,objective,items,aisles,exec_time
-sa,1,infeasible,0.0,0,0,60.354
-sa,2,infeasible,0.0,0,0,60.668
-sa,3,infeasible,0.0,0,0,60.657
-sa,4,infeasible,0.0,0,0,60.444
-sa,5,infeasible,0.0,0,0,60.244
