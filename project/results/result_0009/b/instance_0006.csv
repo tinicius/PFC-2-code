@@ -1,0 +1,3 @@
+algo_id,run_id,status,objective,items,aisles,exec_time
+sa_default,1,feasible,84.0,3024,36,600.474
+sa_default,2,feasible,83.34615384615384,2167,26,600.317
