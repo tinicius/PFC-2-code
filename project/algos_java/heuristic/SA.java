@@ -62,6 +62,14 @@ public class SA extends Heuristic {
         bestSolution = initialSolution;
         Solution solution = initialSolution.clone();
 
+        // AUTO-CALIBRATE T0
+        double initialObj = initialSolution.getObj();
+        if (initialObj > 0) {
+            this.t0 = initialObj * 0.1; // Accept ~10% worse solutions initially
+        } else {
+            this.t0 = 100.0;
+        }
+        
         double temperature = this.t0;
         long nItersWithoutImprovement = 0;
         int itersInTemperature = 0;
@@ -119,6 +127,33 @@ public class SA extends Heuristic {
                     temperature = t0;
                     if (output != null) {
                         output.println("Re-heating Simulated Annealing");
+                    }
+                    
+                    // Perturbation: randomly remove/add a few aisles to escape local optimum
+                    int k = Math.max(1, solution.aisles.size() / 4);
+                    for(int i = 0; i < k; i++) {
+                        if (solution.aisles.size() > 0) {
+                            int r = random.nextInt(solution.aisles.size());
+                            solution.removeAisle(solution.aisles.get(r));
+                        }
+                    }
+                    for(int i = 0; i < k; i++) {
+                        List<Integer> avail = new ArrayList<>();
+                        for(int j = 0; j < problem.nAisles; j++) {
+                            if(!solution.aislePresent[j]) avail.add(j);
+                        }
+                        if(!avail.isEmpty()) {
+                            int a = avail.get(random.nextInt(avail.size()));
+                            solution.addAisle(a);
+                        }
+                    }
+                    solution.randomizedGreedyRebuildOrders(random);
+                    
+                    // After perturbation, evaluate the solution
+                    double newObj = solution.getObj();
+                    if (newObj > bestSolution.getObj() && solution.getTotalItemsPicked() >= problem.lb) {
+                        bestSolution = solution.clone();
+                        nItersWithoutImprovement = 0;
                     }
                 }
             }

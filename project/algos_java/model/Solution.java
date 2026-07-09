@@ -143,6 +143,14 @@ public class Solution {
     }
 
     /**
+     * Removes an order and updates the cached totalItemsPicked.
+     */
+    public void removeOrder(int orderIdx) {
+        orders.remove((Integer) orderIdx);
+        totalItemsPicked -= problem.orderUnits[orderIdx];
+    }
+
+    /**
      * Returns the cached total items picked.
      */
     public int getTotalItemsPicked() {
@@ -158,6 +166,43 @@ public class Solution {
         System.arraycopy(stock, 0, tempStock, 0, stock.length);
 
         for (int orderIdx = 0; orderIdx < problem.nOrders; orderIdx++) {
+            // Check if the order can be fulfilled with the current stock
+            boolean canFulfill = true;
+            for (Map.Entry<Integer, Integer> entry : problem.orders.get(orderIdx).entrySet()) {
+                if (tempStock[entry.getKey()] < entry.getValue()) {
+                    canFulfill = false;
+                    break;
+                }
+            }
+            if (!canFulfill) continue;
+
+            // Check if adding this order would exceed the upper bound
+            int units = problem.orderUnits[orderIdx];
+            if (totalItemsPicked + units > problem.ub) continue;
+
+            // Add the order and consume stock
+            addOrder(orderIdx);
+            for (Map.Entry<Integer, Integer> entry : problem.orders.get(orderIdx).entrySet()) {
+                tempStock[entry.getKey()] -= entry.getValue();
+            }
+        }
+    }
+
+    /**
+     * Greedily rebuilds the order selection based on current aisles/stock.
+     * Processes orders in a randomized sequence.
+     */
+    public void randomizedGreedyRebuildOrders(java.util.Random random) {
+        clearOrders();
+        System.arraycopy(stock, 0, tempStock, 0, stock.length);
+
+        List<Integer> orderIndices = new ArrayList<>(problem.nOrders);
+        for (int i = 0; i < problem.nOrders; i++) {
+            orderIndices.add(i);
+        }
+        java.util.Collections.shuffle(orderIndices, random);
+
+        for (int orderIdx : orderIndices) {
             // Check if the order can be fulfilled with the current stock
             boolean canFulfill = true;
             for (Map.Entry<Integer, Integer> entry : problem.orders.get(orderIdx).entrySet()) {

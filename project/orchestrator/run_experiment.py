@@ -26,7 +26,8 @@ def worker(task):
     result_dir = task['result_dir']
     
     # Path to instance file
-    instance_path = os.path.join("/home/vinicius/Documents/CEFET/TCC/pfc2/datasets", dataset, instance)
+    datasets_dir = Path(__file__).resolve().parent.parent.parent / "datasets"
+    instance_path = str(datasets_dir / dataset / instance)
         
     solution_path = os.path.join(result_dir, "temp", f"{instance}_{algo['id']}_{run_id}.json")
 
@@ -111,7 +112,10 @@ def main():
             "Main.java",
             "heuristic/Heuristic.java", "heuristic/SA.java",
             "model/Problem.java", "model/Solution.java",
-            "neighborhood/Move.java", "neighborhood/AddAisle.java", "neighborhood/RemoveAisle.java"],
+            "neighborhood/Move.java", "neighborhood/AddAisle.java", "neighborhood/RemoveAisle.java",
+            "neighborhood/SwapAisle.java", "neighborhood/SwapOrder.java", 
+            "neighborhood/AddOrder.java", "neighborhood/RemoveOrder.java",
+            "constructive/AisleFirst.java"],
         cwd=java_dir, check=True
     )
 

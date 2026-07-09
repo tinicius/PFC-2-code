@@ -36,7 +36,7 @@ public class AddAisle extends Move {
         solution.addAisle(addedAisle);
 
         // Greedy rebuild uses pre-allocated work buffer and cached orderUnits
-        solution.greedyRebuildOrders();
+        solution.randomizedGreedyRebuildOrders(random);
 
         if (solution.getTotalItemsPicked() < problem.lb) {
             deltaObj = -1;

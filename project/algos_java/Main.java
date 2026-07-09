@@ -41,13 +41,36 @@ public class Main {
         Solution solution = new Solution(problem);
 
         if ("sa".equals(algo)) {
+            // Seed SA with AisleFirst solution
+            Map<String, String> params = new HashMap<>();
+            params.put("score", score);
+            AisleFirst constructor = new AisleFirst(params);
+            solution = constructor.solve(problem);
+
             Heuristic solver = new SA(problem, random, alpha, t0, saMax);
             Move addAisle = new AddAisle(problem, random, "AddAisle");
             addAisle.setPriority(2);
             solver.addMove(addAisle);
+            
             Move removeAisle = new RemoveAisle(problem, random, "RemoveAisle");
             removeAisle.setPriority(1);
             solver.addMove(removeAisle);
+
+            Move swapAisle = new neighborhood.SwapAisle(problem, random, "SwapAisle");
+            swapAisle.setPriority(4);
+            solver.addMove(swapAisle);
+
+            Move swapOrder = new neighborhood.SwapOrder(problem, random, "SwapOrder");
+            swapOrder.setPriority(3);
+            solver.addMove(swapOrder);
+
+            Move addOrder = new neighborhood.AddOrder(problem, random, "AddOrder");
+            addOrder.setPriority(2);
+            solver.addMove(addOrder);
+
+            Move removeOrder = new neighborhood.RemoveOrder(problem, random, "RemoveOrder");
+            removeOrder.setPriority(1);
+            solver.addMove(removeOrder);
 
             if (solver.getMoves().size() > 0)
                 solution = solver.run(solution, timeLimit, maxIters, System.out);

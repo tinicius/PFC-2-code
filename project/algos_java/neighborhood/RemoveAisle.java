@@ -28,7 +28,7 @@ public class RemoveAisle extends Move {
         solution.removeAisle(removedAisle);
 
         // Greedy rebuild uses pre-allocated work buffer and cached orderUnits
-        solution.greedyRebuildOrders();
+        solution.randomizedGreedyRebuildOrders(random);
 
         if (solution.getTotalItemsPicked() < problem.lb) {
             deltaObj = -1;
