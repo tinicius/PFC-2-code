@@ -1,5 +1,5 @@
 Algoritmo,Tempo Médio (s),GAP Médio,Pareto
-par-it,117.0,0.0,True
-par-it+ref-lin,127.4,0.05,False
-aisle_first,600.983225,0.05660874435319685,False
-ref-lin,183.95,1.6,False
+par-it+ref-lin,199.88571428571427,0.17142857142857143,True
+aisle_first,603.6293000000001,0.6565129870558437,False
+ref-lin,299.45714285714286,1.8,False
+par-it,193.94285714285715,7.285714285714286,True

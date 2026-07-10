@@ -6,6 +6,14 @@ import sys
 import argparse
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import tempfile
+
+sys.path.append(os.path.join("project", "validator"))
+try:
+    import validator
+except ImportError:
+    print("Warning: could not import validator. Validation metrics will not be calculated.", file=sys.stderr)
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -46,6 +54,22 @@ def main():
             sol["run_id"] = run_id
             if "status" not in sol:
                 sol["status"] = "success"
+            
+            # Validate to compute objective, items, and aisles
+            if 'validator' in sys.modules:
+                inst_path = Path("datasets") / dataset / inst
+                if inst_path.exists():
+                    with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.json') as tmp:
+                        json.dump(sol, tmp)
+                        tmp_path = tmp.name
+                    
+                    try:
+                        val_res = validator.validate(str(inst_path), tmp_path)
+                        val_res.pop('message', None)
+                        sol.update(val_res)
+                    finally:
+                        os.remove(tmp_path)
+                        
             return (dataset, inst, sol, None)
         except s3.exceptions.NoSuchKey:
             return (dataset, inst, None, key)

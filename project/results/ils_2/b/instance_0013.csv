@@ -1,0 +1,3 @@
+algo_id,run_id,status,objective,items,aisles,exec_time
+ils_tuned,0,feasible,752.0,6768,9,638.52
+ils_tuned,1,feasible,754.8888888888889,6794,9,643.691
