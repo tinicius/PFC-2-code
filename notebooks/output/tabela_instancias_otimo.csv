@@ -1,0 +1,4 @@
+Algoritmo,Inst. Otimo,Inst. Sem Otimo,Total,% Otimo
+ils_default,18,2,20,90.0
+sa_default,19,25,44,43.18
+aisle_first,16,34,50,32.0

@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.util.Random;
 
 import constructive.AisleFirst;
+import constructive.SimpleHeuristic;
 import heuristic.Heuristic;
 import heuristic.SA;
 import heuristic.ILS;
@@ -112,6 +113,10 @@ public class Main {
         }
         else if ("aisle_first".equals(algo)) {
             AisleFirst solver = new AisleFirst();
+            solution = solver.solve(problem);
+        }
+        else if ("simple".equals(algo)) {
+            SimpleHeuristic solver = new SimpleHeuristic(random);
             solution = solver.solve(problem);
         }
         else {
