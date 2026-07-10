@@ -22,17 +22,49 @@
       "instance_0019.txt",
       "instance_0020.txt"
     ],
-    "b": [],
-    "x": []
+    "b": [
+      "instance_0001.txt",
+      "instance_0002.txt",
+      "instance_0003.txt",
+      "instance_0004.txt",
+      "instance_0005.txt",
+      "instance_0006.txt",
+      "instance_0007.txt",
+      "instance_0008.txt",
+      "instance_0009.txt",
+      "instance_0010.txt",
+      "instance_0011.txt",
+      "instance_0012.txt",
+      "instance_0013.txt",
+      "instance_0014.txt",
+      "instance_0015.txt"
+    ],
+    "x": [
+      "instance_0001.txt",
+      "instance_0002.txt",
+      "instance_0003.txt",
+      "instance_0004.txt",
+      "instance_0005.txt",
+      "instance_0006.txt",
+      "instance_0007.txt",
+      "instance_0008.txt",
+      "instance_0009.txt",
+      "instance_0010.txt",
+      "instance_0011.txt",
+      "instance_0012.txt",
+      "instance_0013.txt",
+      "instance_0014.txt",
+      "instance_0015.txt"
+    ]
   },
   "algorithms": [
     {
-      "id": "ils_default",
+      "id": "ils_tuned",
       "binary": "ils",
       "params": {
-        "maxLocalIters": 5000,
-        "perturbationStrength": 0.25,
-        "acceptanceThreshold": 0.02,
+        "maxLocalIters": 8000,
+        "perturbationStrength": 0.30,
+        "acceptanceThreshold": 0.01,
         "maxIters": 1000000
       }
     }

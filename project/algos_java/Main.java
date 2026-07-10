@@ -28,9 +28,9 @@ public class Main {
     public static String score = "useful";
 
     // ILS parameters
-    public static int maxLocalIters = 5000;
-    public static double perturbationStrength = 0.25;
-    public static double acceptanceThreshold = 0.02;
+    public static int maxLocalIters = 8000;
+    public static double perturbationStrength = 0.30;
+    public static double acceptanceThreshold = 0.01;
 
     public static void main(String[] args) throws IOException {
         if (!readArgs(args)) {

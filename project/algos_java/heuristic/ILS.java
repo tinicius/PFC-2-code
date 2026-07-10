@@ -2,6 +2,7 @@ package heuristic;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import model.Problem;
 import model.Solution;
@@ -14,10 +15,15 @@ import neighborhood.Move;
  *   s₀ ← InitialSolution (AisleFirst)
  *   s* ← LocalSearch(s₀)
  *   while stopping criterion not met:
- *       s' ← Perturb(s*)
+ *       s' ← Perturb(s*)           ← guided: remove worst aisles, add best candidates
  *       s'' ← LocalSearch(s')
  *       s* ← AcceptanceCriterion(s*, s'')
  *   return s*
+ *
+ * Perturbation strategy:
+ *   - Removes the k aisles with the lowest per-item stock contribution (least useful).
+ *   - Adds the k unused aisles with the highest total stock (most promising).
+ *   - Falls back to random selection when candidates are tied or unavailable.
  *
  * @author Generated for PFC2
  */
@@ -169,36 +175,63 @@ public class ILS extends Heuristic {
     }
 
     /**
-     * Perturbation: randomly removes and adds aisles, then rebuilds orders.
-     * The number of aisles affected is controlled by perturbationStrength.
+     * Guided perturbation: removes the k least-efficient aisles and adds the
+     * k most-promising unused aisles, then rebuilds orders.
+     *
+     * <p>"Efficiency" of an aisle is its total stock (sum of all item quantities).
+     * Aisles with lower stock contribute less to the objective and are removed first.
+     * Unused aisles with higher stock are added as replacements.
+     *
+     * <p>A random tie-breaking jitter is applied so that repeated perturbations on
+     * the same solution do not always produce the same result.
      *
      * @param solution the solution to perturb (modified in place).
      */
     private void perturb(Solution solution) {
         int k = Math.max(1, (int) (solution.aisles.size() * perturbationStrength));
 
-        // Remove k random aisles
-        for (int i = 0; i < k; i++) {
-            if (solution.aisles.size() > 0) {
-                int idx = random.nextInt(solution.aisles.size());
-                solution.removeAisle(solution.aisles.get(idx));
-            }
+        // --- Remove the k least-efficient aisles ---
+        // Sort present aisles by ascending efficiency; add small random jitter to break ties.
+        List<Integer> presentSorted = new ArrayList<>(solution.aisles);
+        presentSorted.sort(Comparator.comparingDouble(
+                a -> aisleEfficiency(a) + random.nextDouble() * 0.01));
+
+        int toRemove = Math.min(k, presentSorted.size());
+        for (int i = 0; i < toRemove; i++) {
+            solution.removeAisle(presentSorted.get(i));
         }
 
-        // Add k random aisles (not already present)
-        for (int i = 0; i < k; i++) {
-            List<Integer> available = new ArrayList<>();
-            for (int j = 0; j < problem.nAisles; j++) {
-                if (!solution.aislePresent[j]) available.add(j);
-            }
-            if (!available.isEmpty()) {
-                int a = available.get(random.nextInt(available.size()));
-                solution.addAisle(a);
-            }
+        // --- Add the k most-promising unused aisles ---
+        // Sort absent aisles by descending efficiency; add small random jitter to break ties.
+        List<Integer> absent = new ArrayList<>();
+        for (int j = 0; j < problem.nAisles; j++) {
+            if (!solution.aislePresent[j]) absent.add(j);
+        }
+        absent.sort(Comparator.comparingDouble(
+                a -> -(aisleEfficiency(a) + random.nextDouble() * 0.01)));
+
+        int toAdd = Math.min(k, absent.size());
+        for (int i = 0; i < toAdd; i++) {
+            solution.addAisle(absent.get(i));
         }
 
         // Rebuild orders with the new aisle configuration
         solution.randomizedGreedyRebuildOrders(random);
+    }
+
+    /**
+     * Computes the efficiency score of an aisle as its total stock
+     * (sum of all item quantities stored in it).
+     *
+     * @param aisleIdx the aisle index.
+     * @return total stock quantity in the aisle.
+     */
+    private double aisleEfficiency(int aisleIdx) {
+        int total = 0;
+        for (int qty : problem.aisles.get(aisleIdx).values()) {
+            total += qty;
+        }
+        return total;
     }
 
     /**
