@@ -191,28 +191,40 @@ public class ILS extends Heuristic {
         int k = Math.max(1, (int) (solution.aisles.size() * perturbationStrength));
 
         // --- Remove the k least-efficient aisles ---
-        // Sort present aisles by ascending efficiency; add small random jitter to break ties.
-        List<Integer> presentSorted = new ArrayList<>(solution.aisles);
-        presentSorted.sort(Comparator.comparingDouble(
-                a -> aisleEfficiency(a) + random.nextDouble() * 0.01));
+        // Pre-compute jittered scores so the comparator is stable (TimSort requires it).
+        List<Integer> presentAisles = new ArrayList<>(solution.aisles);
+        double[] presentScores = new double[presentAisles.size()];
+        for (int i = 0; i < presentAisles.size(); i++) {
+            presentScores[i] = aisleEfficiency(presentAisles.get(i)) + random.nextDouble() * 0.01;
+        }
+        // Sort indices by ascending score (lowest efficiency first)
+        Integer[] presentIdx = new Integer[presentAisles.size()];
+        for (int i = 0; i < presentIdx.length; i++) presentIdx[i] = i;
+        Arrays.sort(presentIdx, Comparator.comparingDouble(i -> presentScores[i]));
 
-        int toRemove = Math.min(k, presentSorted.size());
+        int toRemove = Math.min(k, presentAisles.size());
         for (int i = 0; i < toRemove; i++) {
-            solution.removeAisle(presentSorted.get(i));
+            solution.removeAisle(presentAisles.get(presentIdx[i]));
         }
 
         // --- Add the k most-promising unused aisles ---
-        // Sort absent aisles by descending efficiency; add small random jitter to break ties.
+        // Pre-compute jittered scores for absent aisles.
         List<Integer> absent = new ArrayList<>();
         for (int j = 0; j < problem.nAisles; j++) {
             if (!solution.aislePresent[j]) absent.add(j);
         }
-        absent.sort(Comparator.comparingDouble(
-                a -> -(aisleEfficiency(a) + random.nextDouble() * 0.01)));
+        double[] absentScores = new double[absent.size()];
+        for (int i = 0; i < absent.size(); i++) {
+            absentScores[i] = aisleEfficiency(absent.get(i)) + random.nextDouble() * 0.01;
+        }
+        // Sort indices by descending score (highest efficiency first)
+        Integer[] absentIdx = new Integer[absent.size()];
+        for (int i = 0; i < absentIdx.length; i++) absentIdx[i] = i;
+        Arrays.sort(absentIdx, Comparator.comparingDouble(i -> -absentScores[i]));
 
         int toAdd = Math.min(k, absent.size());
         for (int i = 0; i < toAdd; i++) {
-            solution.addAisle(absent.get(i));
+            solution.addAisle(absent.get(absentIdx[i]));
         }
 
         // Rebuild orders with the new aisle configuration
