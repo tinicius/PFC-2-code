@@ -1,0 +1,37 @@
+{
+  "datasets": {
+    "a": [
+    
+    ],
+    "b": [
+      "instance_0010.txt",
+      "instance_0011.txt",
+      "instance_0012.txt",
+      "instance_0013.txt",
+      "instance_0014.txt"
+    ],
+    "x": [
+      "instance_0008.txt",
+      "instance_0009.txt",
+      "instance_0010.txt",
+      "instance_0011.txt",
+      "instance_0012.txt",
+      "instance_0013.txt",
+      "instance_0014.txt"
+    ]
+  },
+  "algorithms": [
+    {
+      "id": "sa_default",
+      "binary": "sa",
+      "params": {
+        "alpha": 0.95,
+        "saMax": 10000,
+        "maxIters": 1000000
+      }
+    }
+  ],
+  "runs_per_instance": 1,
+  "time_limit": 600,
+  "n_workers": 6
+}

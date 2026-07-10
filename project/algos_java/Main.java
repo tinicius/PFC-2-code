@@ -4,6 +4,7 @@ import java.util.Random;
 import constructive.AisleFirst;
 import heuristic.Heuristic;
 import heuristic.SA;
+import heuristic.ILS;
 import model.Problem;
 import model.Solution;
 import neighborhood.AddAisle;
@@ -24,6 +25,11 @@ public class Main {
     public static double t0 = 1000.0;
     public static int saMax = 10000;
     public static String score = "useful";
+
+    // ILS parameters
+    public static int maxLocalIters = 5000;
+    public static double perturbationStrength = 0.25;
+    public static double acceptanceThreshold = 0.02;
 
     public static void main(String[] args) throws IOException {
         if (!readArgs(args)) {
@@ -48,6 +54,39 @@ public class Main {
             addAisle.setPriority(2);
             solver.addMove(addAisle);
             
+            Move removeAisle = new RemoveAisle(problem, random, "RemoveAisle");
+            removeAisle.setPriority(1);
+            solver.addMove(removeAisle);
+
+            Move swapAisle = new neighborhood.SwapAisle(problem, random, "SwapAisle");
+            swapAisle.setPriority(4);
+            solver.addMove(swapAisle);
+
+            Move swapOrder = new neighborhood.SwapOrder(problem, random, "SwapOrder");
+            swapOrder.setPriority(3);
+            solver.addMove(swapOrder);
+
+            Move addOrder = new neighborhood.AddOrder(problem, random, "AddOrder");
+            addOrder.setPriority(2);
+            solver.addMove(addOrder);
+
+            Move removeOrder = new neighborhood.RemoveOrder(problem, random, "RemoveOrder");
+            removeOrder.setPriority(1);
+            solver.addMove(removeOrder);
+
+            if (solver.getMoves().size() > 0)
+                solution = solver.run(solution, timeLimit, maxIters, System.out);
+        }
+        else if ("ils".equals(algo)) {
+            // Seed ILS with AisleFirst solution
+            AisleFirst constructor = new AisleFirst();
+            solution = constructor.solve(problem);
+
+            Heuristic solver = new ILS(problem, random, maxLocalIters, perturbationStrength, acceptanceThreshold);
+            Move addAisle = new AddAisle(problem, random, "AddAisle");
+            addAisle.setPriority(2);
+            solver.addMove(addAisle);
+
             Move removeAisle = new RemoveAisle(problem, random, "RemoveAisle");
             removeAisle.setPriority(1);
             solver.addMove(removeAisle);
@@ -154,6 +193,15 @@ public class Main {
                     break;
                 case "score":
                     score = value;
+                    break;
+                case "maxLocalIters":
+                    maxLocalIters = Integer.parseInt(value);
+                    break;
+                case "perturbationStrength":
+                    perturbationStrength = Double.parseDouble(value);
+                    break;
+                case "acceptanceThreshold":
+                    acceptanceThreshold = Double.parseDouble(value);
                     break;
             }
         }

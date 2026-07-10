@@ -4,6 +4,7 @@ import os
 import shutil
 import subprocess
 import glob
+import traceback
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 from collections import defaultdict
@@ -33,13 +34,16 @@ def worker(task):
 
     algo_name = algo.get('binary', 'sa')
     java_dir = "project/algos_java"
+    
+    
+    seed = random.randint(1, 100000)
 
     cmd = [
         "java", "-cp", java_dir, "Main",
         f"--input={instance_path}",
         f"--output={solution_path}",
         f"--time-limit={time_limit}",
-        f"--seed={random.randint(1, 100000)}",
+        f"--seed={seed}",
         f"--algo={algo_name}",
         f"--params={json.dumps(algo.get('params', {}))}",
     ]
@@ -57,6 +61,7 @@ def worker(task):
     # print(cmd)
     # return
         
+    proc = None
     try:
         proc = subprocess.run(cmd, capture_output=True, text=True, timeout=time_limit + 30)
         if proc.stderr:
@@ -75,8 +80,23 @@ def worker(task):
                 metrics.update(val_res)
     except Exception as e:
         metrics["status"] = "timeout_or_error"
+        sep = "=" * 60
+        print(f"\n{sep}", file=sys.stderr)
+        print(f"[TIMEOUT/ERROR] {dataset}/{instance} | algo={algo['id']} run={run_id} seed={seed}", file=sys.stderr)
+        print(f"  Exception type : {type(e).__name__}", file=sys.stderr)
+        print(f"  Exception msg  : {e}", file=sys.stderr)
+        print(f"  Command        : {' '.join(cmd)}", file=sys.stderr)
+        print("  Traceback:", file=sys.stderr)
+        traceback.print_exc(file=sys.stderr)
+        if proc is not None and proc.stderr:
+            print("  Java stderr output:", file=sys.stderr)
+            print(proc.stderr, file=sys.stderr)
+        if proc is not None and proc.stdout:
+            print("  Java stdout output:", file=sys.stderr)
+            print(proc.stdout, file=sys.stderr)
+        print(sep, file=sys.stderr)
         
-    return dataset, instance, metrics
+    return seed, dataset, instance, metrics
 
 def main():
     if len(sys.argv) != 2:
@@ -111,7 +131,7 @@ def main():
     subprocess.run(
         ["javac", "-d", ".",
             "Main.java",
-            "heuristic/Heuristic.java", "heuristic/SA.java",
+            "heuristic/Heuristic.java", "heuristic/SA.java", "heuristic/ILS.java",
             "model/Problem.java", "model/Solution.java",
             "neighborhood/Move.java", "neighborhood/AddAisle.java", "neighborhood/RemoveAisle.java",
             "neighborhood/SwapAisle.java", "neighborhood/SwapOrder.java", 
@@ -145,9 +165,9 @@ def main():
     with ProcessPoolExecutor(max_workers=n_workers) as executor:
         futures = [executor.submit(worker, t) for t in tasks]
         for completed, future in enumerate(as_completed(futures), start=1):
-            dataset, instance, metrics = future.result()
+            seed, dataset, instance, metrics = future.result()
             results_by_instance[dataset][instance].append(metrics)
-            print(f"[{completed}/{total}] {dataset}/{instance} - {metrics['algo_id']} (run {metrics['run_id']}) -> {metrics['status']}")
+            print(f"[{completed}/{total}] {dataset}/{instance} - {metrics['algo_id']} (run {metrics['run_id']}) (seed {seed}) -> {metrics['status']}")
             
     for dataset, instances in results_by_instance.items():
         dataset_dir = os.path.join(result_dir, dataset)

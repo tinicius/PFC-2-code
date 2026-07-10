@@ -176,7 +176,7 @@ public class SA extends Heuristic {
     /**
      * Returns the string representation of this heuristic.
      *
-     * @return the string representation of this heuristic (with parameters values).
+     * @return the string representation of this heuristic.
      */
     public String toString() {
         return String.format("Simulated Annealing (alpha=%.3f, saMax=%s, t0=%s)",
