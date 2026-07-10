@@ -71,5 +71,5 @@
   ],
   "runs_per_instance": 2,
   "time_limit": 600,
-  "n_workers": 12
+  "n_workers": 30
 }
