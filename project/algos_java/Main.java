@@ -129,8 +129,7 @@ public class Main {
         solution.write(outFile, execTime);
         solution.validate(System.err);
 
-        System.out.printf("Best objective..: %f\n", solution.getObj());
-        System.out.printf("Total runtime...: %.2fs\n", execTime);
+        System.out.printf("%f\n", solution.getObj());
     }
 
     /**

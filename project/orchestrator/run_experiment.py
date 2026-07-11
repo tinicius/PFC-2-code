@@ -38,15 +38,30 @@ def worker(task):
     
     seed = random.randint(1, 100000)
 
-    cmd = [
-        "java", "-cp", java_dir, "Main",
-        f"--input={instance_path}",
-        f"--output={solution_path}",
-        f"--time-limit={time_limit}",
-        f"--seed={seed}",
-        f"--algo={algo_name}",
-        f"--params={json.dumps(algo.get('params', {}))}",
-    ]
+    if algo_name == "andre_feijo":
+        jar_path = os.path.join(java_dir, "andre_feijo", "target", "ChallengeSBPO2025-1.0.jar")
+        
+        # Search for CPLEX native library path dynamically, or use the known path
+        cplex_lib_path = "/opt/ibm/ILOG/CPLEX_Studio_Community222/cplex/bin/x86-64_linux"
+        
+        cmd = [
+            "java",
+            "-Xmx8g",
+            f"-Djava.library.path={cplex_lib_path}",
+            "-jar", jar_path,
+            instance_path,
+            solution_path
+        ]
+    else:
+        cmd = [
+            "java", "-cp", java_dir, "Main",
+            f"--input={instance_path}",
+            f"--output={solution_path}",
+            f"--time-limit={time_limit}",
+            f"--seed={seed}",
+            f"--algo={algo_name}",
+            f"--params={json.dumps(algo.get('params', {}))}",
+        ]
     
     metrics = {
         "algo_id": algo['id'],
@@ -139,6 +154,19 @@ def main():
             "constructive/AisleFirst.java"],
         cwd=java_dir, check=True
     )
+
+    has_andre = any(algo.get('binary') == 'andre_feijo' for algo in config['algorithms'])
+    if has_andre:
+        print("Compiling andre_feijo code (maven)...")
+        try:
+            subprocess.run(["mvn", "clean", "package"], cwd=os.path.join(java_dir, "andre_feijo"), check=True)
+        except FileNotFoundError:
+            print("ERROR: Maven ('mvn') is not installed or not in PATH.")
+            print("Please install Maven to compile the 'andre_feijo' algorithm.")
+            sys.exit(1)
+        except subprocess.CalledProcessError as e:
+            print(f"ERROR: Maven compilation failed with exit code {e.returncode}.")
+            sys.exit(1)
 
     tasks = []
     for dataset, instances in config['datasets'].items():

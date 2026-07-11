@@ -69,19 +69,20 @@ public class SA extends Heuristic {
         } else {
             this.t0 = 100.0;
         }
-        
+
         double temperature = this.t0;
         long nItersWithoutImprovement = 0;
         int itersInTemperature = 0;
 
         while (nItersWithoutImprovement < maxIters) {
 
-            // Amortize system call: check time every 1024 iterations
-            if ((nIters & 0x3FF) == 0 && System.currentTimeMillis() >= finalTimeMillis)
+            // Check time limit
+            if (System.currentTimeMillis() >= finalTimeMillis)
                 break;
 
             Move move = selectMove(solution);
-            if (move == null) break;
+            if (move == null)
+                break;
 
             double delta = move.doMove(solution);
 
@@ -128,27 +129,28 @@ public class SA extends Heuristic {
                     if (output != null) {
                         output.println("Re-heating Simulated Annealing");
                     }
-                    
+
                     // Perturbation: randomly remove/add a few aisles to escape local optimum
                     int k = Math.max(1, solution.aisles.size() / 4);
-                    for(int i = 0; i < k; i++) {
+                    for (int i = 0; i < k; i++) {
                         if (solution.aisles.size() > 0) {
                             int r = random.nextInt(solution.aisles.size());
                             solution.removeAisle(solution.aisles.get(r));
                         }
                     }
-                    for(int i = 0; i < k; i++) {
+                    for (int i = 0; i < k; i++) {
                         List<Integer> avail = new ArrayList<>();
-                        for(int j = 0; j < problem.nAisles; j++) {
-                            if(!solution.aislePresent[j]) avail.add(j);
+                        for (int j = 0; j < problem.nAisles; j++) {
+                            if (!solution.aislePresent[j])
+                                avail.add(j);
                         }
-                        if(!avail.isEmpty()) {
+                        if (!avail.isEmpty()) {
                             int a = avail.get(random.nextInt(avail.size()));
                             solution.addAisle(a);
                         }
                     }
                     solution.randomizedGreedyRebuildOrders(random);
-                    
+
                     // After perturbation, evaluate the solution
                     double newObj = solution.getObj();
                     if (newObj > bestSolution.getObj() && solution.getTotalItemsPicked() >= problem.lb) {
@@ -159,15 +161,6 @@ public class SA extends Heuristic {
             }
 
             nIters++;
-        }
-
-        // Print move statistics using built-in Move counters (no extra HashMap needed)
-        if (output != null) {
-            for (Move move : moves) {
-                output.printf("Move: %s, Iters: %d, Improvements: %d, Sideways: %d, Worsens: %d, Rejects: %d%n",
-                        move.name, move.getNIters(), move.getNImprovements(),
-                        move.getNSideways(), move.getNWorsens(), move.getNRejects());
-            }
         }
 
         return bestSolution;

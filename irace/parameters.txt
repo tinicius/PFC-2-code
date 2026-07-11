@@ -1,0 +1,8 @@
+## Algoritmo
+algorithm             "--algo="                 c  (ils)
+
+## Parâmetros do ILS
+maxLocalIters         "--maxLocalIters="        i  (1000, 50000)      | algorithm == "ils"
+perturbationStrength  "--perturbationStrength=" r  (0.0, 1.0)         | algorithm == "ils"
+acceptanceThreshold   "--acceptanceThreshold="  r  (0.0, 1.0)         | algorithm == "ils"
+maxItersIls           "--maxIters="             i  (1000, 5000000)    | algorithm == "ils"

@@ -1,0 +1,122 @@
+#!/bin/bash
+
+###############################################################################
+# target-runner para irace
+#
+# Argumentos:
+# $1 = configuration ID
+# $2 = instance ID
+# $3 = seed
+# $4 = instance (path)
+# $5+ = parâmetros do irace
+###############################################################################
+
+CONFIG_ID=$1
+INSTANCE_ID=$2
+SEED=$3
+INSTANCE=$4
+shift 4
+
+# ---------------------------------------------------------------------------
+# Valores padrão
+# ---------------------------------------------------------------------------
+
+ALGO=""
+
+MAX_LOCAL_ITERS=""
+PERTURBATION_STRENGTH=""
+ACCEPTANCE_THRESHOLD=""
+MAX_ITERS=""
+
+T0=""
+ALPHA=""
+SA_MAX=""
+
+# ---------------------------------------------------------------------------
+# Lê parâmetros enviados pelo irace
+# ---------------------------------------------------------------------------
+
+for ARG in "$@"; do
+    case $ARG in
+        --algo=*)
+            ALGO="${ARG#*=}"
+            ;;
+        --maxLocalIters=*)
+            MAX_LOCAL_ITERS="${ARG#*=}"
+            ;;
+        --perturbationStrength=*)
+            PERTURBATION_STRENGTH="${ARG#*=}"
+            ;;
+        --acceptanceThreshold=*)
+            ACCEPTANCE_THRESHOLD="${ARG#*=}"
+            ;;
+        --maxIters=*)
+            MAX_ITERS="${ARG#*=}"
+            ;;
+        --t0=*)
+            T0="${ARG#*=}"
+            ;;
+        --alpha=*)
+            ALPHA="${ARG#*=}"
+            ;;
+        --saMax=*)
+            SA_MAX="${ARG#*=}"
+            ;;
+    esac
+done
+
+# ---------------------------------------------------------------------------
+# Monta JSON de parâmetros
+# ---------------------------------------------------------------------------
+
+if [ "$ALGO" = "ils" ]; then
+
+PARAMS=$(cat <<EOF
+{"maxLocalIters":$MAX_LOCAL_ITERS,"perturbationStrength":$PERTURBATION_STRENGTH,"acceptanceThreshold":$ACCEPTANCE_THRESHOLD,"maxIters":$MAX_ITERS}
+EOF
+)
+
+elif [ "$ALGO" = "sa" ]; then
+
+PARAMS=$(cat <<EOF
+{"t0":$T0,"alpha":$ALPHA,"saMax":$SA_MAX,"maxIters":$MAX_ITERS}
+EOF
+)
+
+else
+    echo "Algoritmo inválido: $ALGO" >&2
+    exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# Executa algoritmo
+# ---------------------------------------------------------------------------
+
+STDOUT="c${CONFIG_ID}-${INSTANCE_ID}-${SEED}.stdout"
+STDERR="c${CONFIG_ID}-${INSTANCE_ID}-${SEED}.stderr"
+
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+java -cp "$PROJECT_ROOT/project/algos_java" Main \
+    --input="$INSTANCE" \
+    --output=/tmp/irace_${CONFIG_ID}_${INSTANCE_ID}.json \
+    --time-limit=30 \
+    --seed="$SEED" \
+    --algo="$ALGO" \
+    --params="$PARAMS" \
+    >"$STDOUT" 2>"$STDERR"
+
+STATUS=$?
+
+if [ $STATUS -ne 0 ]; then
+    cat "$STDERR" >&2
+    exit 1
+fi
+
+# Última linha deve conter o custo
+COST=$(tail -n 1 "$STDOUT")
+
+echo "$COST"
+
+rm -f "$STDOUT" "$STDERR"
+
+exit 0
