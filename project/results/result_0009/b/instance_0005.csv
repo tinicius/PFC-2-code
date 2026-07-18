@@ -1,6 +1,0 @@
-algo_id,run_id,status,objective,items,aisles,exec_time
-ils,1,feasible,367.6666666666667,1103,3,60.513
-ils,2,feasible,368.0,1104,3,60.662
-ils,3,feasible,366.6666666666667,1100,3,60.581
-ils,4,feasible,368.0,1104,3,60.781
-ils,5,feasible,366.6666666666667,1100,3,60.87

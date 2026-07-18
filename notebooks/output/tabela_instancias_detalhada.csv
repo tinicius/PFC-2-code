@@ -1,6 +1,5 @@
-dataset,instance,ils_300_gap
-a,instance_0009,4.4115 +- 5.3929
-a,instance_0010,2.1180 +- 0.4773
-b,instance_0015,1.8275 +- 0.6283
-x,instance_0007,1.0783 +- 0.9908
-x,instance_0008,3.5520 +- 1.2112
+dataset,instance,ils_100000_.4_.01_100-600_gap
+a,instance_0008,0.0000 +- 0.0000
+a,instance_0009,2.8737 +- 2.7180
+a,instance_0010,1.2480 +- 0.4992
+a,instance_0011,5.0342 +- 2.7171

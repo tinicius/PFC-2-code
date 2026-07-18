@@ -41,6 +41,12 @@ public class ILS extends Heuristic {
     private final double acceptanceThreshold;
 
     /**
+     * Maximum consecutive non-improving ILS iterations before resetting
+     * {@code current} back to {@code bestSolution} to prevent unbounded drift.
+     */
+    private final int maxStagnation;
+
+    /**
      * Instantiates a new ILS.
      *
      * @param problem              the problem reference.
@@ -53,10 +59,29 @@ public class ILS extends Heuristic {
      */
     public ILS(Problem problem, Random random, int maxLocalIters,
             double perturbationStrength, double acceptanceThreshold) {
+        this(problem, random, maxLocalIters, perturbationStrength, acceptanceThreshold, 20);
+    }
+
+    /**
+     * Instantiates a new ILS with an explicit stagnation limit.
+     *
+     * @param problem              the problem reference.
+     * @param random               the random number generator.
+     * @param maxLocalIters        max iterations without improvement in local search.
+     * @param perturbationStrength fraction of aisles to perturb.
+     * @param acceptanceThreshold  acceptance threshold (0.0 = only improvements,
+     *                             0.02 = up to 2% worse).
+     * @param maxStagnation        number of consecutive non-improving ILS iterations
+     *                             before resetting {@code current} to
+     *                             {@code bestSolution} (recommended: 15-30).
+     */
+    public ILS(Problem problem, Random random, int maxLocalIters,
+            double perturbationStrength, double acceptanceThreshold, int maxStagnation) {
         super(problem, random, "ILS");
         this.maxLocalIters = maxLocalIters;
         this.perturbationStrength = perturbationStrength;
         this.acceptanceThreshold = acceptanceThreshold;
+        this.maxStagnation = maxStagnation;
     }
 
     /**
@@ -77,12 +102,10 @@ public class ILS extends Heuristic {
         current = localSearch(current, finalTimeMillis);
 
         bestSolution = current.clone();
-        long ilsItersWithoutImprovement = 0;
 
-        while (ilsItersWithoutImprovement < maxIters) {
+        int stagnationCounter = 0;
 
-            if (System.currentTimeMillis() >= finalTimeMillis)
-                break;
+        while (System.currentTimeMillis() < finalTimeMillis) {
 
             Solution perturbed = current.clone();
             perturb(perturbed);
@@ -95,20 +118,22 @@ public class ILS extends Heuristic {
             if (candidateObj > bestObj && candidate.getTotalItemsPicked() >= problem.lb) {
                 bestSolution = candidate.clone();
                 current = candidate;
-                ilsItersWithoutImprovement = 0;
+                stagnationCounter = 0;
                 if (output != null) {
-                    output.printf("ILS iter %d: New best = %.6f%n", nIters, bestObj);
+                    output.printf("ILS iter %d: New best = %.6f%n", nIters, candidateObj);
                 }
             } else if (candidateObj >= bestObj * (1.0 - acceptanceThreshold)
                     && candidate.getTotalItemsPicked() >= problem.lb) {
                 current = candidate;
-                ilsItersWithoutImprovement++;
+                stagnationCounter++;
             } else {
-                ilsItersWithoutImprovement++;
+                stagnationCounter++;
             }
 
-            if (ilsItersWithoutImprovement > 0 && ilsItersWithoutImprovement % (maxIters / 2) == 0) {
+            // Drift recovery: snap back to best after too many non-improving iterations
+            if (stagnationCounter >= maxStagnation) {
                 current = bestSolution.clone();
+                stagnationCounter = 0;
             }
 
             nIters++;
@@ -290,7 +315,7 @@ public class ILS extends Heuristic {
      */
     @Override
     public String toString() {
-        return String.format("ILS (maxLocalIters=%d, perturbationStrength=%.2f, acceptanceThreshold=%.3f)",
-                maxLocalIters, perturbationStrength, acceptanceThreshold);
+        return String.format("ILS (maxLocalIters=%d, perturbationStrength=%.2f, acceptanceThreshold=%.3f, maxStagnation=%d)",
+                maxLocalIters, perturbationStrength, acceptanceThreshold, maxStagnation);
     }
 }

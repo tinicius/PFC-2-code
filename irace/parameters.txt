@@ -2,7 +2,7 @@
 algorithm             "--algo="                 c  (ils)
 
 ## Parâmetros do ILS
-maxLocalIters         "--maxLocalIters="        i  (1000, 10000)      | algorithm == "ils"
-perturbationStrength  "--perturbationStrength=" r  (0.1, 0.5)         | algorithm == "ils"
+maxLocalIters         "--maxLocalIters="        i  (1000, 10000)        | algorithm == "ils"
+perturbationStrength  "--perturbationStrength=" r  (0.1, 0.5)           | algorithm == "ils"
 acceptanceThreshold   "--acceptanceThreshold="  r  (0.01, 0.05)         | algorithm == "ils"
-## maxItersIls           "--maxIters="             i  (1000, 5000000)    | algorithm == "ils"
+maxStagnation         "--maxStagnation="        i  (20, 500)            | algorithm == "ils"

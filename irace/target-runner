@@ -26,6 +26,7 @@ ALGO=""
 MAX_LOCAL_ITERS=""
 PERTURBATION_STRENGTH=""
 ACCEPTANCE_THRESHOLD=""
+MAX_STAGNATION=""
 MAX_ITERS=""
 
 T0=""
@@ -50,6 +51,9 @@ for ARG in "$@"; do
         --acceptanceThreshold=*)
             ACCEPTANCE_THRESHOLD="${ARG#*=}"
             ;;
+        --maxStagnation=*)
+            MAX_STAGNATION="${ARG#*=}"
+            ;;
         --maxIters=*)
             MAX_ITERS="${ARG#*=}"
             ;;
@@ -72,7 +76,7 @@ done
 if [ "$ALGO" = "ils" ]; then
 
 PARAMS=$(cat <<EOF
-{"maxLocalIters":$MAX_LOCAL_ITERS,"perturbationStrength":$PERTURBATION_STRENGTH,"acceptanceThreshold":$ACCEPTANCE_THRESHOLD,"maxIters":$MAX_ITERS}
+{"maxLocalIters":$MAX_LOCAL_ITERS,"perturbationStrength":$PERTURBATION_STRENGTH,"acceptanceThreshold":$ACCEPTANCE_THRESHOLD,"maxStagnation":$MAX_STAGNATION}
 EOF
 )
 
@@ -98,8 +102,8 @@ STDERR="c${CONFIG_ID}-${INSTANCE_ID}-${SEED}.stderr"
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 java -cp "$PROJECT_ROOT/project/algos_java" Main \
     --input="$INSTANCE" \
-    --output=/tmp/irace_${CONFIG_ID}_${INSTANCE_ID}.json \
-    --time-limit=600 \
+    --output=/tmp/irace_${CONFIG_ID}_${INSTANCE_ID}_${SEED}.json \
+    --time-limit=60 \
     --seed="$SEED" \
     --algo="$ALGO" \
     --params="$PARAMS" \

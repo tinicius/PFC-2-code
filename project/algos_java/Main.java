@@ -31,6 +31,7 @@ public class Main {
     public static int maxLocalIters = 8000;
     public static double perturbationStrength = 0.30;
     public static double acceptanceThreshold = 0.01;
+    public static int maxStagnation = 20;
 
     public static void main(String[] args) throws IOException {
         if (!readArgs(args)) {
@@ -83,7 +84,7 @@ public class Main {
             AisleFirst constructor = new AisleFirst();
             solution = constructor.solve(problem);
 
-            Heuristic solver = new ILS(problem, random, maxLocalIters, perturbationStrength, acceptanceThreshold);
+            Heuristic solver = new ILS(problem, random, maxLocalIters, perturbationStrength, acceptanceThreshold, maxStagnation);
             Move addAisle = new AddAisle(problem, random, "AddAisle");
             addAisle.setPriority(2);
             solver.addMove(addAisle);
@@ -206,6 +207,9 @@ public class Main {
                     break;
                 case "acceptanceThreshold":
                     acceptanceThreshold = Double.parseDouble(value);
+                    break;
+                case "maxStagnation":
+                    maxStagnation = Integer.parseInt(value);
                     break;
             }
         }

@@ -12,10 +12,10 @@ targetRunner = "./target-runner"
 trainInstancesDir = "/home/vinicius/Documents/CEFET/TCC/pfc2/datasets/a"
 
 ## Orçamento de configurações avaliadas
-maxExperiments = 800
+maxExperiments = 180
 
 ## Alternativamente, pode limitar por tempo
-# maxTime = 600
+# maxTime = 60
 
 ## Número de execuções em paralelo
 parallel = 8

@@ -1,22 +1,27 @@
 {
   "datasets": {
-    "a": ["instance_0009.txt", "instance_0010.txt"],
-    "b": ["instance_0015.txt"],
-    "x": ["instance_0007.txt", "instance_0008.txt"]
+    "a": [
+      "instance_0008.txt",
+      "instance_0009.txt",
+      "instance_0010.txt",
+      "instance_0011.txt"
+    ],
+    "b": [],
+    "x": []
   },
   "algorithms": [
     {
-      "id": "ils_300",
+      "id": "ils_100000_.4_.01_100-600",
       "binary": "ils",
       "params": {
-        "maxLocalIters": 8000,
-        "perturbationStrength": 0.4,
+        "maxLocalIters": 2000,
+        "perturbationStrength": 0.47,
         "acceptanceThreshold": 0.01,
-        "maxIters": 1000000
+        "maxStagnation": 100
       }
     }
   ],
-  "runs_per_instance": 10,
-  "time_limit": 60,
+  "runs_per_instance": 5,
+  "time_limit": 600,
   "n_workers": 12
 }
