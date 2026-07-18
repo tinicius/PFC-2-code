@@ -45,7 +45,7 @@ def worker(task):
         cplex_lib_path = "/opt/ibm/ILOG/CPLEX_Studio_Community222/cplex/bin/x86-64_linux"
         
         cmd = [
-            "java",
+            "/usr/lib/jvm/java-21-openjdk-amd64/bin/java",
             "-Xmx8g",
             f"-Djava.library.path={cplex_lib_path}",
             "-jar", jar_path,
@@ -54,7 +54,7 @@ def worker(task):
         ]
     else:
         cmd = [
-            "java", "-cp", java_dir, "Main",
+            "/usr/lib/jvm/java-21-openjdk-amd64/bin/java", "-cp", java_dir, "Main",
             f"--input={instance_path}",
             f"--output={solution_path}",
             f"--time-limit={time_limit}",
@@ -144,7 +144,7 @@ def main():
     # if not os.path.exists(main_class):
     print("Compiling Java code...")
     subprocess.run(
-        ["javac", "-d", ".",
+        ["/usr/lib/jvm/java-21-openjdk-amd64/bin/javac", "-d", ".",
             "Main.java",
             "heuristic/Heuristic.java", "heuristic/SA.java", "heuristic/ILS.java",
             "model/Problem.java", "model/Solution.java",
@@ -159,7 +159,9 @@ def main():
     if has_andre:
         print("Compiling andre_feijo code (maven)...")
         try:
-            subprocess.run(["mvn", "clean", "package"], cwd=os.path.join(java_dir, "andre_feijo"), check=True)
+            env = os.environ.copy()
+            env["JAVA_HOME"] = "/usr/lib/jvm/java-21-openjdk-amd64"
+            subprocess.run(["mvn", "clean", "package"], cwd=os.path.join(java_dir, "andre_feijo"), env=env, check=True)
         except FileNotFoundError:
             print("ERROR: Maven ('mvn') is not installed or not in PATH.")
             print("Please install Maven to compile the 'andre_feijo' algorithm.")

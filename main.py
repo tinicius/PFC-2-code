@@ -1,9 +1,9 @@
-instances = 5
+instances = 20 + 15 + 15
 time_limit_s = 600 # 10 minutes
 
-executions = 2
+executions = 10
 
-threads = 6
+threads = 12
 
 total_seconds = (executions * instances * time_limit_s) / threads
 hours = int(total_seconds // 3600)

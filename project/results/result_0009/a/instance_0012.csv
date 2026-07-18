@@ -1,0 +1,6 @@
+algo_id,run_id,status,objective,items,aisles,exec_time
+ils,2,feasible,11.25,45,4,60.187
+ils,1,feasible,11.25,45,4,60.234
+ils,3,feasible,11.25,45,4,60.132
+ils,4,feasible,11.25,45,4,60.101
+ils,5,feasible,11.25,45,4,60.296

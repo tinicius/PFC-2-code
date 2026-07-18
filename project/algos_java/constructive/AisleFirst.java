@@ -133,12 +133,13 @@ public class AisleFirst {
             List<Integer> selectedOrders,
             int[] invFull) {
 
-        // Pre-sort orders (same order as packing) — done once
-        Integer[] orderSeqArr = selectedOrders.toArray(new Integer[0]);
-        Arrays.sort(orderSeqArr, (a, b) -> Integer.compare(problem.orderUnits[b], problem.orderUnits[a]));
-
-        // Reusable temp buffer — avoids allocation inside the loop
-        int[] temp = new int[problem.nItems];
+        // Pre-calculate total demand of selected orders
+        int[] totalOrderDemand = new int[problem.nItems];
+        for (int idx : selectedOrders) {
+            for (Map.Entry<Integer, Integer> e : problem.orders.get(idx).entrySet()) {
+                totalOrderDemand[e.getKey()] += e.getValue();
+            }
+        }
 
         Set<Integer> remaining = new LinkedHashSet<>(selectedAisles);
 
@@ -151,20 +152,12 @@ public class AisleFirst {
                     invFull[e.getKey()] -= e.getValue();
                 }
 
-                // Snapshot the reduced inventory into temp and check feasibility
-                System.arraycopy(invFull, 0, temp, 0, problem.nItems);
+                // Check feasibility: remaining invFull must cover totalOrderDemand
                 boolean ok = true;
-                outer:
-                for (int idx : orderSeqArr) {
-                    Map<Integer, Integer> order = problem.orders.get(idx);
-                    for (Map.Entry<Integer, Integer> e : order.entrySet()) {
-                        if (temp[e.getKey()] < e.getValue()) {
-                            ok = false;
-                            break outer;
-                        }
-                    }
-                    for (Map.Entry<Integer, Integer> e : order.entrySet()) {
-                        temp[e.getKey()] -= e.getValue();
+                for (Map.Entry<Integer, Integer> e : problem.aisles.get(aisle).entrySet()) {
+                    if (invFull[e.getKey()] < totalOrderDemand[e.getKey()]) {
+                        ok = false;
+                        break;
                     }
                 }
 
@@ -294,10 +287,26 @@ public class AisleFirst {
             // Early stop
             if ((double) problem.ub / k <= bestObj[0]) break;
 
+            // Dynamic re-ranking of orders based on current inventory
+            List<Integer> currentSeq = new ArrayList<>(sequence);
+            currentSeq.sort((a, b) -> {
+                double scoreA = 0, scoreB = 0;
+                for (Map.Entry<Integer, Integer> e : problem.orders.get(a).entrySet()) {
+                    scoreA += Math.min(e.getValue(), inventory[e.getKey()]);
+                }
+                for (Map.Entry<Integer, Integer> e : problem.orders.get(b).entrySet()) {
+                    scoreB += Math.min(e.getValue(), inventory[e.getKey()]);
+                }
+                if (scoreA == scoreB) {
+                    return Integer.compare(problem.orderUnits[b], problem.orderUnits[a]);
+                }
+                return Double.compare(scoreB, scoreA);
+            });
+
             // Pack orders
             System.arraycopy(inventory, 0, snapshot, 0, problem.nItems);
             List<Integer> selected = new ArrayList<>();
-            int totalUnits = packOrders(sequence, problem, snapshot, selected);
+            int totalUnits = packOrders(currentSeq, problem, snapshot, selected);
 
             if (totalUnits < problem.lb) continue;
 
@@ -369,6 +378,80 @@ public class AisleFirst {
                     inventory[e.getKey()] += e.getValue();
                 }
             }
+            bestAisles[0] = pruneAisles(problem, bestAisles[0], bestOrders[0], inventory);
+
+            // --- Post-pack exchange/repair pass ---
+            int[] currentInv = new int[problem.nItems];
+            System.arraycopy(inventory, 0, currentInv, 0, problem.nItems);
+            for (int o : bestOrders[0]) {
+                for (Map.Entry<Integer, Integer> e : problem.orders.get(o).entrySet()) {
+                    currentInv[e.getKey()] -= e.getValue();
+                }
+            }
+            
+            int currentTotalUnits = 0;
+            for(int o : bestOrders[0]) currentTotalUnits += problem.orderUnits[o];
+            
+            boolean changed = true;
+            while(changed) {
+                changed = false;
+                List<Integer> currentOrdersList = new ArrayList<>(bestOrders[0]);
+                
+                // For each unpacked order B
+                for (int b = 0; b < problem.nOrders; b++) {
+                    if (bestOrders[0].contains(b)) continue;
+                    
+                    int sizeB = problem.orderUnits[b];
+                    
+                    // For each packed order A
+                    for (int a : currentOrdersList) {
+                        int sizeA = problem.orderUnits[a];
+                        
+                        // Swap A out for B should yield better unit-efficiency
+                        if (sizeB <= sizeA) continue;
+                        
+                        int newTotal = currentTotalUnits - sizeA + sizeB;
+                        if (newTotal < problem.lb || newTotal > problem.ub) continue;
+                        
+                        boolean canPackB = true;
+                        Map<Integer, Integer> orderA = problem.orders.get(a);
+                        Map<Integer, Integer> orderB = problem.orders.get(b);
+                        
+                        // Free A's items
+                        for (Map.Entry<Integer, Integer> e : orderA.entrySet()) {
+                            currentInv[e.getKey()] += e.getValue();
+                        }
+                        
+                        // Check B's items
+                        for (Map.Entry<Integer, Integer> e : orderB.entrySet()) {
+                            if (currentInv[e.getKey()] < e.getValue()) {
+                                canPackB = false;
+                                break;
+                            }
+                        }
+                        
+                        if (canPackB) {
+                            // Accept swap
+                            for (Map.Entry<Integer, Integer> e : orderB.entrySet()) {
+                                currentInv[e.getKey()] -= e.getValue();
+                            }
+                            bestOrders[0].remove((Integer) a);
+                            bestOrders[0].add(b);
+                            currentTotalUnits = newTotal;
+                            changed = true;
+                            break; 
+                        } else {
+                            // Revert A's items
+                            for (Map.Entry<Integer, Integer> e : orderA.entrySet()) {
+                                currentInv[e.getKey()] -= e.getValue();
+                            }
+                        }
+                    }
+                    if (changed) break;
+                }
+            }
+            
+            // Re-run pruneAisles after exchange pass
             bestAisles[0] = pruneAisles(problem, bestAisles[0], bestOrders[0], inventory);
         }
 

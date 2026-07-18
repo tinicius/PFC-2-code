@@ -2,7 +2,6 @@ package heuristic;
 
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import model.Problem;
 import model.Solution;
@@ -74,32 +73,25 @@ public class ILS extends Heuristic {
     public Solution run(Solution initialSolution, long timeLimitMillis, long maxIters, PrintStream output) {
         long finalTimeMillis = System.currentTimeMillis() + timeLimitMillis;
 
-        // Phase 1: Local search on the initial solution
         Solution current = initialSolution.clone();
         current = localSearch(current, finalTimeMillis);
 
         bestSolution = current.clone();
         long ilsItersWithoutImprovement = 0;
 
-        // Phase 2: ILS main loop
         while (ilsItersWithoutImprovement < maxIters) {
-            // Check time limit every iteration
+
             if (System.currentTimeMillis() >= finalTimeMillis)
                 break;
 
-            // Perturb the current solution
             Solution perturbed = current.clone();
             perturb(perturbed);
 
-            // Apply local search to the perturbed solution
             Solution candidate = localSearch(perturbed, finalTimeMillis);
 
-            // Acceptance criterion
             double candidateObj = candidate.getObj();
-            double currentObj = current.getObj();
             double bestObj = bestSolution.getObj();
 
-            // Always accept improvements over the global best
             if (candidateObj > bestObj && candidate.getTotalItemsPicked() >= problem.lb) {
                 bestSolution = candidate.clone();
                 current = candidate;
@@ -107,15 +99,16 @@ public class ILS extends Heuristic {
                 if (output != null) {
                     output.printf("ILS iter %d: New best = %.6f%n", nIters, bestObj);
                 }
-            }
-            // Threshold acceptance: accept if within threshold of current
-            else if (candidateObj >= currentObj * (1.0 - acceptanceThreshold)) {
+            } else if (candidateObj >= bestObj * (1.0 - acceptanceThreshold)
+                    && candidate.getTotalItemsPicked() >= problem.lb) {
                 current = candidate;
                 ilsItersWithoutImprovement++;
-            }
-            // Reject
-            else {
+            } else {
                 ilsItersWithoutImprovement++;
+            }
+
+            if (ilsItersWithoutImprovement > 0 && ilsItersWithoutImprovement % (maxIters / 2) == 0) {
+                current = bestSolution.clone();
             }
 
             nIters++;
@@ -134,7 +127,8 @@ public class ILS extends Heuristic {
      */
     private Solution localSearch(Solution solution, long finalTimeMillis) {
         long localItersWithoutImprovement = 0;
-        long localIters = 0;
+        int sidewaysMoves = 0;
+        int maxSidewaysMoves = maxLocalIters / 4;
 
         while (localItersWithoutImprovement < maxLocalIters) {
             // Check time limit
@@ -148,20 +142,23 @@ public class ILS extends Heuristic {
             double delta = move.doMove(solution);
 
             if (delta > 0) {
-                // Improvement: accept and reset counter
+                // Improvement: accept and reset counters
                 acceptMove(move);
                 localItersWithoutImprovement = 0;
+                sidewaysMoves = 0;
             } else if (delta == 0) {
-                // Sideways move: accept but count as no improvement
+                // Sideways move: accept but track separately
                 acceptMove(move);
-                localItersWithoutImprovement++;
+                sidewaysMoves++;
+                if (sidewaysMoves >= maxSidewaysMoves) {
+                    break;
+                }
             } else {
                 // Worsening move: reject
                 rejectMove(move);
                 localItersWithoutImprovement++;
             }
 
-            localIters++;
         }
 
         return solution;
@@ -186,27 +183,53 @@ public class ILS extends Heuristic {
     private void perturb(Solution solution) {
         int k = Math.max(1, (int) (solution.aisles.size() * perturbationStrength));
 
-        // --- Remove the k least-efficient aisles ---
-        // Pre-compute jittered scores so the comparator is stable (TimSort requires
-        // it).
+        // 1. Calculate demand of the current orders
+        int[] residualDemand = new int[problem.nItems];
+        for (int o : solution.orders) {
+            for (Map.Entry<Integer, Integer> e : problem.orders.get(o).entrySet()) {
+                residualDemand[e.getKey()] += e.getValue();
+            }
+        }
+
+        // --- Remove the k least-useful aisles (using RCL) ---
         List<Integer> presentAisles = new ArrayList<>(solution.aisles);
         double[] presentScores = new double[presentAisles.size()];
         for (int i = 0; i < presentAisles.size(); i++) {
-            presentScores[i] = aisleEfficiency(presentAisles.get(i)) + random.nextDouble() * 0.01;
+            presentScores[i] = aisleEfficiency(presentAisles.get(i), residualDemand);
         }
-        // Sort indices by ascending score (lowest efficiency first)
+
+        // Sort indices by ascending score (lowest usefulness first)
         Integer[] presentIdx = new Integer[presentAisles.size()];
         for (int i = 0; i < presentIdx.length; i++)
             presentIdx[i] = i;
         Arrays.sort(presentIdx, Comparator.comparingDouble(i -> presentScores[i]));
 
         int toRemove = Math.min(k, presentAisles.size());
+        int rclRemoveSize = Math.min(presentAisles.size(), Math.max(toRemove * 2, (int) (presentAisles.size() * 0.2)));
+
+        List<Integer> rclRemove = new ArrayList<>();
+        for (int i = 0; i < rclRemoveSize; i++) {
+            rclRemove.add(presentAisles.get(presentIdx[i]));
+        }
+        Collections.shuffle(rclRemove, random);
+
         for (int i = 0; i < toRemove; i++) {
-            solution.removeAisle(presentAisles.get(presentIdx[i]));
+            solution.removeAisle(rclRemove.get(i));
         }
 
-        // --- Add the k most-promising unused aisles ---
-        // Pre-compute jittered scores for absent aisles.
+        // 2. Calculate remaining unmet demand
+        int[] inventory = new int[problem.nItems];
+        for (int a : solution.aisles) {
+            for (Map.Entry<Integer, Integer> e : problem.aisles.get(a).entrySet()) {
+                inventory[e.getKey()] += e.getValue();
+            }
+        }
+        int[] unmetDemand = new int[problem.nItems];
+        for (int i = 0; i < problem.nItems; i++) {
+            unmetDemand[i] = Math.max(0, residualDemand[i] - inventory[i]);
+        }
+
+        // --- Add the k most-useful unused aisles (using RCL) ---
         List<Integer> absent = new ArrayList<>();
         for (int j = 0; j < problem.nAisles; j++) {
             if (!solution.aislePresent[j])
@@ -214,17 +237,27 @@ public class ILS extends Heuristic {
         }
         double[] absentScores = new double[absent.size()];
         for (int i = 0; i < absent.size(); i++) {
-            absentScores[i] = aisleEfficiency(absent.get(i)) + random.nextDouble() * 0.01;
+            absentScores[i] = aisleEfficiency(absent.get(i), unmetDemand);
         }
-        // Sort indices by descending score (highest efficiency first)
+
+        // Sort indices by descending score (highest usefulness first)
         Integer[] absentIdx = new Integer[absent.size()];
         for (int i = 0; i < absentIdx.length; i++)
             absentIdx[i] = i;
         Arrays.sort(absentIdx, Comparator.comparingDouble(i -> -absentScores[i]));
 
         int toAdd = Math.min(k, absent.size());
-        for (int i = 0; i < toAdd; i++) {
-            solution.addAisle(absent.get(absentIdx[i]));
+        if (toAdd > 0 && absent.size() > 0) {
+            int rclAddSize = Math.min(absent.size(), Math.max(toAdd * 2, (int) (absent.size() * 0.2)));
+            List<Integer> rclAdd = new ArrayList<>();
+            for (int i = 0; i < rclAddSize; i++) {
+                rclAdd.add(absent.get(absentIdx[i]));
+            }
+            Collections.shuffle(rclAdd, random);
+
+            for (int i = 0; i < toAdd; i++) {
+                solution.addAisle(rclAdd.get(i));
+            }
         }
 
         // Rebuild orders with the new aisle configuration
@@ -232,18 +265,22 @@ public class ILS extends Heuristic {
     }
 
     /**
-     * Computes the efficiency score of an aisle as its total stock
-     * (sum of all item quantities stored in it).
+     * Computes the efficiency score of an aisle as its useful stock
+     * (sum of all item quantities that fulfill the unmet demand).
      *
      * @param aisleIdx the aisle index.
-     * @return total stock quantity in the aisle.
+     * @param demand   the current unmet demand array.
+     * @return useful stock quantity in the aisle.
      */
-    private double aisleEfficiency(int aisleIdx) {
-        int total = 0;
-        for (int qty : problem.aisles.get(aisleIdx).values()) {
-            total += qty;
+    private double aisleEfficiency(int aisleIdx, int[] demand) {
+        double val = 0.0;
+        for (Map.Entry<Integer, Integer> e : problem.aisles.get(aisleIdx).entrySet()) {
+            int d = demand[e.getKey()];
+            if (d > 0) {
+                val += Math.min(e.getValue(), d);
+            }
         }
-        return total;
+        return val;
     }
 
     /**

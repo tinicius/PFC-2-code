@@ -99,7 +99,7 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 java -cp "$PROJECT_ROOT/project/algos_java" Main \
     --input="$INSTANCE" \
     --output=/tmp/irace_${CONFIG_ID}_${INSTANCE_ID}.json \
-    --time-limit=30 \
+    --time-limit=600 \
     --seed="$SEED" \
     --algo="$ALGO" \
     --params="$PARAMS" \

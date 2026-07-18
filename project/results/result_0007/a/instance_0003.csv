@@ -1,0 +1,11 @@
+algo_id,run_id,status,objective,items,aisles,exec_time
+ils_low_max_iters,1,feasible,12.0,48,4,14.911
+ils_low_max_iters,2,feasible,12.0,48,4,13.778
+ils_low_max_iters,4,feasible,12.0,48,4,12.613
+ils_low_max_iters,3,feasible,12.0,48,4,13.18
+ils_low_max_iters,5,feasible,12.0,48,4,12.905
+ils,1,feasible,12.0,48,4,600.112
+ils,2,feasible,12.0,48,4,600.119
+ils,3,feasible,12.0,48,4,600.147
+ils,4,feasible,12.0,48,4,600.112
+ils,5,feasible,12.0,48,4,600.123
