@@ -3,7 +3,6 @@ import json
 import os
 import shutil
 import subprocess
-import glob
 import traceback
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
@@ -36,21 +35,23 @@ def worker(task):
     java_dir = "project/algos_java"
     
     
-    seed = random.randint(1, 100000)
+    seed = task.get('seed', random.randint(1, 100000))
 
     if algo_name == "andre_feijo":
         jar_path = os.path.join(java_dir, "andre_feijo", "target", "ChallengeSBPO2025-1.0.jar")
         
         # Search for CPLEX native library path dynamically, or use the known path
-        cplex_lib_path = "/opt/ibm/ILOG/CPLEX_Studio_Community222/cplex/bin/x86-64_linux"
+        cplex_lib_path = "/opt/ibm/ILOG/CPLEX_Studio222/cplex/bin/x86-64_linux"
         
+        # andre_feijo accepts an optional 3rd arg as the seed (long).
         cmd = [
             "/usr/lib/jvm/java-21-openjdk-amd64/bin/java",
             "-Xmx8g",
             f"-Djava.library.path={cplex_lib_path}",
             "-jar", jar_path,
             instance_path,
-            solution_path
+            solution_path,
+            str(seed)
         ]
     else:
         cmd = [
@@ -66,6 +67,7 @@ def worker(task):
     metrics = {
         "algo_id": algo['id'],
         "run_id": run_id,
+        "seed": seed,
         "status": "error",
         "objective": 0.0,
         "items": 0,
@@ -173,15 +175,17 @@ def main():
     tasks = []
     for dataset, instances in config['datasets'].items():
         for instance in instances:
-            for algo in config['algorithms']:
-                for run_id in range(1, config.get('runs_per_instance', 1) + 1):
+            for run_id in range(1, config.get('runs_per_instance', 1) + 1):
+                seed = random.randint(1, 100000)
+                for algo in config['algorithms']:
                     tasks.append({
                         'dataset': dataset,
                         'instance': instance,
                         'run_id': run_id,
                         'algo': algo,
                         'time_limit': config.get('time_limit', 10),
-                        'result_dir': result_dir
+                        'result_dir': result_dir,
+                        'seed': seed
                     })
                     
     results_by_instance = defaultdict(lambda: defaultdict(list))
@@ -205,7 +209,7 @@ def main():
         for instance, metrics_list in instances.items():
             csv_path = os.path.join(dataset_dir, f"{instance.replace('.txt', '')}.csv")
             with open(csv_path, "w") as f:
-                headers = ["algo_id", "run_id", "status", "objective", "items", "aisles", "exec_time"]
+                headers = ["algo_id", "run_id", "seed", "status", "objective", "items", "aisles", "exec_time"]
                 f.write(",".join(headers) + "\n")
                 for m in metrics_list:
                     f.write(",".join(str(m.get(h, "")) for h in headers) + "\n")

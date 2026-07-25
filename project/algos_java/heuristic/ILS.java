@@ -8,31 +8,30 @@ import model.Solution;
 import neighborhood.Move;
 
 /**
- * Iterated Local Search (ILS) metaheuristic.
+ * Iterated Local Search (ILS) with General Variable Neighborhood Search (GVNS).
  *
- * Cycle:
+ * GVNS Cycle:
  * s₀ ← InitialSolution (AisleFirst)
- * s* ← LocalSearch(s₀)
+ * s* ← VND(s₀)
  * while stopping criterion not met:
- * s' ← Perturb(s*) ← guided: remove worst aisles, add best candidates
- * s'' ← LocalSearch(s')
- * s* ← AcceptanceCriterion(s*, s'')
+ *   s' ← Shake(s*, k) ← guided: remove worst aisles, add best candidates (strength k)
+ *   s'' ← VND(s')
+ *   s* ← AcceptanceCriterion(s*, s'')
+ *   Update k (reset to 1 on strict improvement, else increment/wrap)
  * return s*
  *
- * Perturbation strategy:
- * - Removes the k aisles with the lowest per-item stock contribution (least
- * useful).
- * - Adds the k unused aisles with the highest total stock (most promising).
- * - Falls back to random selection when candidates are tied or unavailable.
+ * Shaking strategy:
+ * - Removes the k*base aisles with the lowest per-item stock contribution.
+ * - Adds the k*base unused aisles with the highest total stock.
  *
  * @author Generated for PFC2
  */
 public class ILS extends Heuristic {
 
-    /** Maximum iterations without improvement in local search phase. */
+    /** Maximum iterations without improvement in local search phase per tier. */
     private final int maxLocalIters;
 
-    /** Fraction of aisles to perturb (k = strength × |aisles|, min 1). */
+    /** Fraction of aisles to perturb (baseK = strength × |aisles|, min 1). */
     private final double perturbationStrength;
 
     /**
@@ -41,99 +40,80 @@ public class ILS extends Heuristic {
     private final double acceptanceThreshold;
 
     /**
-     * Maximum consecutive non-improving ILS iterations before resetting
-     * {@code current} back to {@code bestSolution} to prevent unbounded drift.
+     * Maximum VNS shaking level before wrapping back to 1.
      */
-    private final int maxStagnation;
+    private final int kMax;
 
     /**
-     * Instantiates a new ILS.
-     *
-     * @param problem              the problem reference.
-     * @param random               the random number generator.
-     * @param maxLocalIters        max iterations without improvement in local
-     *                             search.
-     * @param perturbationStrength fraction of aisles to perturb.
-     * @param acceptanceThreshold  acceptance threshold (0.0 = only improvements,
-     *                             0.02 = up to 2% worse).
-     */
-    public ILS(Problem problem, Random random, int maxLocalIters,
-            double perturbationStrength, double acceptanceThreshold) {
-        this(problem, random, maxLocalIters, perturbationStrength, acceptanceThreshold, 20);
-    }
-
-    /**
-     * Instantiates a new ILS with an explicit stagnation limit.
+     * Instantiates a new GVNS/ILS.
      *
      * @param problem              the problem reference.
      * @param random               the random number generator.
      * @param maxLocalIters        max iterations without improvement in local search.
-     * @param perturbationStrength fraction of aisles to perturb.
-     * @param acceptanceThreshold  acceptance threshold (0.0 = only improvements,
-     *                             0.02 = up to 2% worse).
-     * @param maxStagnation        number of consecutive non-improving ILS iterations
-     *                             before resetting {@code current} to
-     *                             {@code bestSolution} (recommended: 15-30).
+     * @param perturbationStrength fraction of aisles to perturb for k=1.
+     * @param acceptanceThreshold  acceptance threshold.
      */
     public ILS(Problem problem, Random random, int maxLocalIters,
-            double perturbationStrength, double acceptanceThreshold, int maxStagnation) {
-        super(problem, random, "ILS");
-        this.maxLocalIters = maxLocalIters;
-        this.perturbationStrength = perturbationStrength;
-        this.acceptanceThreshold = acceptanceThreshold;
-        this.maxStagnation = maxStagnation;
+            double perturbationStrength, double acceptanceThreshold) {
+        this(problem, random, maxLocalIters, perturbationStrength, acceptanceThreshold, 5);
     }
 
     /**
-     * Executes the Iterated Local Search.
+     * Instantiates a new GVNS/ILS with explicit shaking limit.
      *
-     * @param initialSolution the initial (input) solution.
-     * @param timeLimitMillis the time limit (in milliseconds).
-     * @param maxIters        the maximum number of ILS iterations without global
-     *                        improvement.
-     * @param output          output PrintStream for logging purposes.
-     * @return the best solution encountered by the ILS.
+     * @param problem              the problem reference.
+     * @param random               the random number generator.
+     * @param maxLocalIters        max iterations without improvement in local search.
+     * @param perturbationStrength fraction of aisles to perturb for k=1.
+     * @param acceptanceThreshold  acceptance threshold.
+     * @param kMax                 maximum shaking level before wrap-reset.
      */
+    public ILS(Problem problem, Random random, int maxLocalIters,
+            double perturbationStrength, double acceptanceThreshold, int kMax) {
+        super(problem, random, "GVNS");
+        this.maxLocalIters = maxLocalIters;
+        this.perturbationStrength = perturbationStrength;
+        this.acceptanceThreshold = acceptanceThreshold;
+        this.kMax = kMax;
+    }
+
     @Override
     public Solution run(Solution initialSolution, long timeLimitMillis, long maxIters, PrintStream output) {
         long finalTimeMillis = System.currentTimeMillis() + timeLimitMillis;
 
         Solution current = initialSolution.clone();
-        current = localSearch(current, finalTimeMillis);
+        current = vnd(current, finalTimeMillis);
 
         bestSolution = current.clone();
 
-        int stagnationCounter = 0;
+        int k = 1; // VNS shaking level
 
         while (System.currentTimeMillis() < finalTimeMillis) {
 
-            Solution perturbed = current.clone();
-            perturb(perturbed);
+            Solution shaken = current.clone();
+            shake(shaken, k);
 
-            Solution candidate = localSearch(perturbed, finalTimeMillis);
+            Solution candidate = vnd(shaken, finalTimeMillis);
 
             double candidateObj = candidate.getObj();
             double bestObj = bestSolution.getObj();
 
             if (candidateObj > bestObj && candidate.getTotalItemsPicked() >= problem.lb) {
+                // Strict global improvement
                 bestSolution = candidate.clone();
                 current = candidate;
-                stagnationCounter = 0;
+                k = 1; // strict reset
                 if (output != null) {
-                    output.printf("ILS iter %d: New best = %.6f%n", nIters, candidateObj);
+                    output.printf("GVNS iter %d (k=%d): New best = %.6f%n", nIters, k, candidateObj);
                 }
             } else if (candidateObj >= bestObj * (1.0 - acceptanceThreshold)
                     && candidate.getTotalItemsPicked() >= problem.lb) {
+                // Acceptable lateral/worse move
                 current = candidate;
-                stagnationCounter++;
+                k = (k < kMax) ? k + 1 : 1; // escalate since we didn't improve on best
             } else {
-                stagnationCounter++;
-            }
-
-            // Drift recovery: snap back to best after too many non-improving iterations
-            if (stagnationCounter >= maxStagnation) {
-                current = bestSolution.clone();
-                stagnationCounter = 0;
+                // Reject move
+                k = (k < kMax) ? k + 1 : 1; // escalate
             }
 
             nIters++;
@@ -143,70 +123,110 @@ public class ILS extends Heuristic {
     }
 
     /**
-     * First-improvement local search.
-     * Applies random moves until maxLocalIters iterations without improvement.
+     * Variable Neighborhood Descent (VND) local search.
      *
-     * @param solution        the solution to improve (modified in place).
-     * @param finalTimeMillis absolute deadline in millis.
-     * @return the improved solution.
+     * Neighborhoods are arranged in tiers by structural cost:
+     *   T1: Order-level moves  (AddOrder, RemoveOrder, SwapOrder)
+     *   T2: Single-aisle moves (AddAisle, RemoveAisle)
+     *   T3: Aisle swap         (SwapAisle)
+     *
+     * Rule: on any improvement → restart from T1.
+     *       on tier exhaustion → escalate to next tier.
+     *       when all tiers exhausted → return.
      */
-    private Solution localSearch(Solution solution, long finalTimeMillis) {
-        long localItersWithoutImprovement = 0;
-        int sidewaysMoves = 0;
-        int maxSidewaysMoves = maxLocalIters / 4;
+    private Solution vnd(Solution solution, long finalTimeMillis) {
+        List<List<Move>> tiers = buildTiers();
+        if (tiers.isEmpty()) return solution;
+        
+        int currentTier = 0;
+        int tierTrials = 0;
+        int maxTrialsPerTier = Math.max(maxLocalIters / Math.max(tiers.size(), 1), 50);
+        int sidewaysInTier = 0;
+        int maxSidewaysPerTier = maxTrialsPerTier / 4;
 
-        while (localItersWithoutImprovement < maxLocalIters) {
-            // Check time limit
-            if (System.currentTimeMillis() >= finalTimeMillis)
-                break;
+        while (currentTier < tiers.size()) {
+            if (System.currentTimeMillis() >= finalTimeMillis) break;
 
-            Move move = selectMove(solution);
-            if (move == null)
-                break;
+            Move move = selectFromTier(tiers.get(currentTier), solution);
+
+            if (move == null) {
+                // No applicable move in tier → escalate immediately
+                currentTier++;
+                tierTrials = 0;
+                sidewaysInTier = 0;
+                continue;
+            }
 
             double delta = move.doMove(solution);
 
             if (delta > 0) {
-                // Improvement: accept and reset counters
+                // Improvement → accept and restart from T1
                 acceptMove(move);
-                localItersWithoutImprovement = 0;
-                sidewaysMoves = 0;
+                currentTier = 0;
+                tierTrials = 0;
+                sidewaysInTier = 0;
             } else if (delta == 0) {
-                // Sideways move: accept but track separately
+                // Sideways move → accept but count as non-improving
                 acceptMove(move);
-                sidewaysMoves++;
-                if (sidewaysMoves >= maxSidewaysMoves) {
-                    break;
+                tierTrials++;
+                sidewaysInTier++;
+                if (sidewaysInTier >= maxSidewaysPerTier) {
+                    currentTier++; // too many sideways → escalate
+                    tierTrials = 0;
+                    sidewaysInTier = 0;
                 }
             } else {
-                // Worsening move: reject
+                // Worsening → reject
                 rejectMove(move);
-                localItersWithoutImprovement++;
+                tierTrials++;
+                if (tierTrials >= maxTrialsPerTier) {
+                    currentTier++; // patience exhausted → escalate
+                    tierTrials = 0;
+                    sidewaysInTier = 0;
+                }
             }
-
         }
 
         return solution;
     }
 
+    private List<List<Move>> buildTiers() {
+        List<Move> t1 = new ArrayList<>();  // order-level
+        List<Move> t2 = new ArrayList<>();  // single-aisle
+        List<Move> t3 = new ArrayList<>();  // aisle swap
+
+        for (Move m : moves) {
+            String n = m.name;
+            if (n.contains("Order"))      t1.add(m);
+            else if (n.equals("SwapAisle")) t3.add(m);
+            else                          t2.add(m); // AddAisle, RemoveAisle
+        }
+
+        List<List<Move>> tiers = new ArrayList<>();
+        if (!t1.isEmpty()) tiers.add(t1);
+        if (!t2.isEmpty()) tiers.add(t2);
+        if (!t3.isEmpty()) tiers.add(t3);
+        return tiers;
+    }
+
+    private Move selectFromTier(List<Move> tier, Solution solution) {
+        List<Move> applicable = new ArrayList<>();
+        for (Move m : tier) {
+            if (m.hasMove(solution)) applicable.add(m);
+        }
+        if (applicable.isEmpty()) return null;
+        return applicable.get(random.nextInt(applicable.size()));
+    }
+
     /**
-     * Guided perturbation: removes the k least-efficient aisles and adds the
-     * k most-promising unused aisles, then rebuilds orders.
-     *
-     * <p>
-     * "Efficiency" of an aisle is its total stock (sum of all item quantities).
-     * Aisles with lower stock contribute less to the objective and are removed
-     * first.
-     * Unused aisles with higher stock are added as replacements.
-     *
-     * <p>
-     * A random tie-breaking jitter is applied so that repeated perturbations on
-     * the same solution do not always produce the same result.
-     *
-     * @param solution the solution to perturb (modified in place).
+     * VNS shaking at intensity level k.
+     * Removes level*baseK least-efficient aisles and adds level*baseK most-promising ones.
      */
-    private void perturb(Solution solution) {
-        int k = Math.max(1, (int) (solution.aisles.size() * perturbationStrength));
+    private void shake(Solution solution, int level) {
+        int baseK = Math.max(1, (int) (solution.aisles.size() * perturbationStrength));
+        int toSwap = Math.min(level * baseK, solution.aisles.size());
+        
+        if (toSwap == 0) return;
 
         // 1. Calculate demand of the current orders
         int[] residualDemand = new int[problem.nItems];
@@ -216,20 +236,19 @@ public class ILS extends Heuristic {
             }
         }
 
-        // --- Remove the k least-useful aisles (using RCL) ---
+        // --- Remove the least-useful aisles (using RCL) ---
         List<Integer> presentAisles = new ArrayList<>(solution.aisles);
         double[] presentScores = new double[presentAisles.size()];
         for (int i = 0; i < presentAisles.size(); i++) {
             presentScores[i] = aisleEfficiency(presentAisles.get(i), residualDemand);
         }
 
-        // Sort indices by ascending score (lowest usefulness first)
         Integer[] presentIdx = new Integer[presentAisles.size()];
         for (int i = 0; i < presentIdx.length; i++)
             presentIdx[i] = i;
         Arrays.sort(presentIdx, Comparator.comparingDouble(i -> presentScores[i]));
 
-        int toRemove = Math.min(k, presentAisles.size());
+        int toRemove = Math.min(toSwap, presentAisles.size());
         int rclRemoveSize = Math.min(presentAisles.size(), Math.max(toRemove * 2, (int) (presentAisles.size() * 0.2)));
 
         List<Integer> rclRemove = new ArrayList<>();
@@ -254,7 +273,7 @@ public class ILS extends Heuristic {
             unmetDemand[i] = Math.max(0, residualDemand[i] - inventory[i]);
         }
 
-        // --- Add the k most-useful unused aisles (using RCL) ---
+        // --- Add the most-useful unused aisles (using RCL) ---
         List<Integer> absent = new ArrayList<>();
         for (int j = 0; j < problem.nAisles; j++) {
             if (!solution.aislePresent[j])
@@ -265,13 +284,12 @@ public class ILS extends Heuristic {
             absentScores[i] = aisleEfficiency(absent.get(i), unmetDemand);
         }
 
-        // Sort indices by descending score (highest usefulness first)
         Integer[] absentIdx = new Integer[absent.size()];
         for (int i = 0; i < absentIdx.length; i++)
             absentIdx[i] = i;
         Arrays.sort(absentIdx, Comparator.comparingDouble(i -> -absentScores[i]));
 
-        int toAdd = Math.min(k, absent.size());
+        int toAdd = Math.min(toSwap, absent.size());
         if (toAdd > 0 && absent.size() > 0) {
             int rclAddSize = Math.min(absent.size(), Math.max(toAdd * 2, (int) (absent.size() * 0.2)));
             List<Integer> rclAdd = new ArrayList<>();
@@ -289,14 +307,6 @@ public class ILS extends Heuristic {
         solution.randomizedGreedyRebuildOrders(random);
     }
 
-    /**
-     * Computes the efficiency score of an aisle as its useful stock
-     * (sum of all item quantities that fulfill the unmet demand).
-     *
-     * @param aisleIdx the aisle index.
-     * @param demand   the current unmet demand array.
-     * @return useful stock quantity in the aisle.
-     */
     private double aisleEfficiency(int aisleIdx, int[] demand) {
         double val = 0.0;
         for (Map.Entry<Integer, Integer> e : problem.aisles.get(aisleIdx).entrySet()) {
@@ -308,14 +318,9 @@ public class ILS extends Heuristic {
         return val;
     }
 
-    /**
-     * Returns the string representation of this heuristic.
-     *
-     * @return the string representation of this heuristic (with parameter values).
-     */
     @Override
     public String toString() {
-        return String.format("ILS (maxLocalIters=%d, perturbationStrength=%.2f, acceptanceThreshold=%.3f, maxStagnation=%d)",
-                maxLocalIters, perturbationStrength, acceptanceThreshold, maxStagnation);
+        return String.format("GVNS (maxLocalIters=%d, perturbationStrength=%.2f, acceptanceThreshold=%.3f, kMax=%d)",
+                maxLocalIters, perturbationStrength, acceptanceThreshold, kMax);
     }
 }

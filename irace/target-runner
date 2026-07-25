@@ -26,7 +26,7 @@ ALGO=""
 MAX_LOCAL_ITERS=""
 PERTURBATION_STRENGTH=""
 ACCEPTANCE_THRESHOLD=""
-MAX_STAGNATION=""
+K_MAX=""
 MAX_ITERS=""
 
 T0=""
@@ -51,8 +51,8 @@ for ARG in "$@"; do
         --acceptanceThreshold=*)
             ACCEPTANCE_THRESHOLD="${ARG#*=}"
             ;;
-        --maxStagnation=*)
-            MAX_STAGNATION="${ARG#*=}"
+        --kMax=*)
+            K_MAX="${ARG#*=}"
             ;;
         --maxIters=*)
             MAX_ITERS="${ARG#*=}"
@@ -76,7 +76,7 @@ done
 if [ "$ALGO" = "ils" ]; then
 
 PARAMS=$(cat <<EOF
-{"maxLocalIters":$MAX_LOCAL_ITERS,"perturbationStrength":$PERTURBATION_STRENGTH,"acceptanceThreshold":$ACCEPTANCE_THRESHOLD,"maxStagnation":$MAX_STAGNATION}
+{"maxLocalIters":$MAX_LOCAL_ITERS,"perturbationStrength":$PERTURBATION_STRENGTH,"acceptanceThreshold":$ACCEPTANCE_THRESHOLD,"kMax":$K_MAX}
 EOF
 )
 
@@ -100,10 +100,10 @@ STDOUT="c${CONFIG_ID}-${INSTANCE_ID}-${SEED}.stdout"
 STDERR="c${CONFIG_ID}-${INSTANCE_ID}-${SEED}.stderr"
 
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-java -cp "$PROJECT_ROOT/project/algos_java" Main \
+/usr/lib/jvm/java-21-openjdk-amd64/bin/java -cp "$PROJECT_ROOT/project/algos_java" Main \
     --input="$INSTANCE" \
     --output=/tmp/irace_${CONFIG_ID}_${INSTANCE_ID}_${SEED}.json \
-    --time-limit=60 \
+    --time-limit=180 \
     --seed="$SEED" \
     --algo="$ALGO" \
     --params="$PARAMS" \
@@ -119,7 +119,9 @@ fi
 # Última linha deve conter o custo
 COST=$(tail -n 1 "$STDOUT")
 
-echo "$COST"
+# Multiplicar o custo por -1 pois o irace sempre minimiza, 
+# e queremos maximizar a função objetivo.
+awk -v cost="$COST" 'BEGIN {print -cost}'
 
 rm -f "$STDOUT" "$STDERR"
 
