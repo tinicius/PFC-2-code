@@ -1,0 +1,3 @@
+algo_id,rpd_medio,tempo_medio,na_fronteira
+aisle_based,3.701257070845511,2.89312,True
+order_based,81.46770598233005,16.74528,False

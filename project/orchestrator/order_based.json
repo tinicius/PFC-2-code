@@ -59,11 +59,11 @@
   },
   "algorithms": [
     {
-      "id": "simple_all",
-      "binary": "simple"
+      "id": "order_based",
+      "binary": "order_based"
     }
   ],
-  "runs_per_instance": 30,
+  "runs_per_instance": 1,
   "time_limit": 60,
-  "n_workers": 10
+  "n_workers": 12
 }

@@ -35,7 +35,8 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         if (!readArgs(args)) {
-            System.err.println("Usage: java Main --input=<path> --output=<path> --time-limit=<secs> [--seed=<int>] [--algo=<name>] [--params=<json>]");
+            System.err.println(
+                    "Usage: java Main --input=<path> --output=<path> --time-limit=<secs> [--seed=<int>] [--algo=<name>] [--params=<json>]");
             System.exit(1);
         }
 
@@ -55,7 +56,7 @@ public class Main {
             Move addAisle = new AddAisle(problem, random, "AddAisle");
             addAisle.setPriority(2);
             solver.addMove(addAisle);
-            
+
             Move removeAisle = new RemoveAisle(problem, random, "RemoveAisle");
             removeAisle.setPriority(1);
             solver.addMove(removeAisle);
@@ -78,8 +79,7 @@ public class Main {
 
             if (solver.getMoves().size() > 0)
                 solution = solver.run(solution, timeLimit, maxIters, System.out);
-        }
-        else if ("ils".equals(algo) || "gvns".equals(algo)) {
+        } else if ("ils".equals(algo) || "gvns".equals(algo)) {
             // Seed ILS with AisleBased solution
             AisleBased constructor = new AisleBased();
             solution = constructor.solve(problem);
@@ -111,16 +111,13 @@ public class Main {
 
             if (solver.getMoves().size() > 0)
                 solution = solver.run(solution, timeLimit, maxIters, System.out);
-        }
-        else if ("aisle_based".equals(algo)) {
+        } else if ("aisle_based".equals(algo)) {
             AisleBased solver = new AisleBased();
             solution = solver.solve(problem);
-        }
-        else if ("simple".equals(algo)) {
+        } else if ("order_based".equals(algo)) {
             OrderBased solver = new OrderBased(random);
             solution = solver.solve(problem);
-        }
-        else {
+        } else {
             System.err.println("Unknown algorithm: " + algo);
             System.exit(1);
         }
@@ -143,20 +140,15 @@ public class Main {
         for (String arg : args) {
             if (arg.startsWith("--input=")) {
                 inFile = arg.substring("--input=".length());
-            }
-            else if (arg.startsWith("--output=")) {
+            } else if (arg.startsWith("--output=")) {
                 outFile = arg.substring("--output=".length());
-            }
-            else if (arg.startsWith("--time-limit=")) {
+            } else if (arg.startsWith("--time-limit=")) {
                 timeLimit = Long.parseLong(arg.substring("--time-limit=".length())) * 1000;
-            }
-            else if (arg.startsWith("--seed=")) {
+            } else if (arg.startsWith("--seed=")) {
                 seed = Long.parseLong(arg.substring("--seed=".length()));
-            }
-            else if (arg.startsWith("--algo=")) {
+            } else if (arg.startsWith("--algo=")) {
                 algo = arg.substring("--algo=".length());
-            }
-            else if (arg.startsWith("--params=")) {
+            } else if (arg.startsWith("--params=")) {
                 parseParams(arg.substring("--params=".length()));
             }
         }
@@ -169,17 +161,21 @@ public class Main {
      * Expected format: {"alpha":0.95,"t0":1000.0,"saMax":10000,"maxIters":10000}
      */
     private static void parseParams(String json) {
-        if (json == null || json.isEmpty()) return;
+        if (json == null || json.isEmpty())
+            return;
         json = json.trim();
-        if (!json.startsWith("{") || !json.endsWith("}")) return;
+        if (!json.startsWith("{") || !json.endsWith("}"))
+            return;
         json = json.substring(1, json.length() - 1).trim();
-        if (json.isEmpty()) return;
+        if (json.isEmpty())
+            return;
 
         String[] pairs = json.split(",");
         for (String pair : pairs) {
             pair = pair.trim();
             int colonIdx = pair.indexOf(':');
-            if (colonIdx < 0) continue;
+            if (colonIdx < 0)
+                continue;
             String key = pair.substring(0, colonIdx).trim().replaceAll("^\"|\"$", "");
             String value = pair.substring(colonIdx + 1).trim().replaceAll("^\"|\"$", "");
 

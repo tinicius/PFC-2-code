@@ -1,3 +1,2 @@
 Algoritmo,Inst. Otimo,Inst. Sem Otimo,Total,% Otimo
-ils_tuned,30,20,50,60.0
-gvns_10000_0.1265_0.09_4,28,22,50,56.0
+aisle_based,16,34,50,32.0

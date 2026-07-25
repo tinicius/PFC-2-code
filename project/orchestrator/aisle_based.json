@@ -63,7 +63,7 @@
       "binary": "aisle_based"
     }
   ],
-  "runs_per_instance": 5,
+  "runs_per_instance": 1,
   "time_limit": 60,
-  "n_workers": 10
+  "n_workers": 12
 }
