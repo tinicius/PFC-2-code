@@ -1,31 +1,31 @@
-# Directory Structure Guide for Agents
+# Guia de Estrutura de Diretórios para Agentes
 
-This document explains the purpose of all major directories in the `pfc2` repository to help AI agents navigate and understand the codebase.
+Este documento explica o propósito de todos os diretórios principais no repositório `pfc2` para ajudar os agentes de IA a navegar e analisar o código.
 
-## Top-Level Directories
+## Diretórios de Nível Superior
 
-- **`.specs/`**: Contains specifications and design documents for project features and tasks.
-- **`.venv/`**: Python virtual environment used for running orchestrator scripts, validation, and Jupyter notebooks.
-- **`.vscode/`**: Contains Visual Studio Code workspace settings and configurations.
-- **`best_solutions/`**: Stores the best known solutions found for the problem instances, likely used for reference or comparison.
-- **`datasets/`**: Contains the problem instances organized by dataset groups (`a`, `b`, `x`, and `examples`). 
-- **`docs/`**: Documentation directory containing algorithm descriptions (e.g., `ILS.md`, `SA.md`, `AisleBased.md`, `SimpleHeuristic.md`) and the problem description PDF (`pt_problem_description.pdf`).
-- **`irace/`**: Contains the configuration files (`scenario.txt`, `parameters.txt`), and execution scripts (`target-runner`) required to run the `irace` package for automatic algorithm parameter tuning.
-- **`notebooks/`**: Contains Jupyter Notebooks used for data analysis, aggregating experiment results, and generating visualizations (e.g., Pareto frontiers, comparative tables).
-- **`skills/`**: Contains AI assistant skill definitions (e.g., `tlc-spec-driven`) used to guide agentic behaviors and structured feature planning in the repository.
+* **`.specs/`**: Guarda as especificações e os documentos de design de recursos e tarefas do projeto.
+* **`.venv/`**: Ambiente virtual Python utilizado na execução de scripts orquestradores, na validação e nos notebooks Jupyter.
+* **`.vscode/`**: Armazena as configurações e os ajustes de workspace do Visual Studio Code.
+* **`best_solutions/`**: Retém as melhores soluções conhecidas para as instâncias do problema, possivelmente utilizadas como referência ou comparação (como o arquivo `best_objectives.csv` para cálculos de RPD).
+* **`datasets/`**: Possui as instâncias do problema organizadas por grupos de conjuntos de dados (`a`, `b`, `x` e `examples`).
+* **`docs/`**: Diretório de documentação com as descrições dos algoritmos (por exemplo, `ILS.md`, `SA.md`, `AisleBased.md`, `SimpleHeuristic.md`) e o PDF de descrição do problema (`pt_problem_description.pdf`).
+* **`irace/`**: Mantém os arquivos de configuração (`scenario.txt`, `parameters.txt`) e os scripts de execução (`target-runner`) necessários para executar o pacote `irace` na sintonia automática de parâmetros dos algoritmos.
+* **`notebooks/`**: Engloba os Notebooks Jupyter empregados na análise de dados, na agregação de resultados de experimentos e na geração de visualizações. Abarca arquivos como `comparacao_algoritmos.ipynb` para testes estatísticos e `analise_resultados.ipynb`, além do subdiretório `output/`.
+* **`skills/`**: Reúne as definições de habilidades de assistentes de IA (por exemplo, `tlc-spec-driven`) usadas para guiar os comportamentos dos agentes e o planejamento estruturado de recursos.
 
-## Project Subdirectories (`project/`)
+## Subdiretórios do Projeto (`project/`)
 
-The `project/` directory contains the core source code, orchestration logic, and outputs for the optimization experiments.
+O diretório `project/` abriga o código fonte principal, a lógica de orquestração e os resultados finais dos experimentos de otimização.
 
-- **`project/algos_java/`**: The main Java source code for the optimization algorithms. Includes subdirectories for specific implementations and components:
-  - `andre_feijo/`: Specific algorithm implementations.
-  - `constructive/`: Constructive heuristic components.
-  - `heuristic/`: Metaheuristic implementations (e.g., Simulated Annealing, Iterated Local Search, Variable Neighborhood Search).
-  - `model/`: Data models and structures representing the problem.
-  - `neighborhood/`: Neighborhood structures used for local search.
-  - `bin/` & `classes/`: Compiled Java bytecode.
-- **`project/orchestrator/`**: Python scripts (such as `run_experiment.py`) and configuration files (`config.json`, `config_andre_feijo.json`) responsible for coordinating the parallel execution of experiments.
-- **`project/out/`**: Temporary output directory, often used for intermediate files during execution.
-- **`project/results/`**: The directory where execution metrics, CSV files, configuration copies, and solver outputs are permanently stored for each experimental run (e.g., `result_0001/`, `result_0002/`).
-- **`project/validator/`**: Contains Python validation scripts (`validator.py`) used to verify the correctness and feasibility of the solutions produced by the optimization algorithms.
+* **`project/algos_java/`**: Código fonte Java principal para os algoritmos de otimização. Inclui subdiretórios para implementações específicas e componentes:
+  * `andre_feijo/`: Implementações de algoritmos específicos.
+  * `constructive/`: Componentes de heurísticas construtivas (como as classes `AisleBased` e `OrderBased`).
+  * `heuristic/`: Implementações de meta-heurísticas (como Simulated Annealing, Iterated Local Search e Variable Neighborhood Search).
+  * `model/`: Modelos de dados e estruturas representativas do problema.
+  * `neighborhood/`: Estruturas de vizinhança empregadas na busca local.
+  * `bin/` & `classes/`: Bytecode Java compilado.
+* **`project/orchestrator/`**: Scripts Python e arquivos utilitários responsáveis pela coordenação da execução paralela de experimentos. Agrupa o orquestrador `run_experiment.py`, o gerador `generate_seeds.py`, as configurações de algoritmos (como `aisle_based.json` e `order_based.json`) e o mapa de sementes consistentes (`seeds.json`).
+* **`project/out/`**: Pasta de saída temporária, comum para arquivos intermediários na fase de execução.
+* **`project/results/`**: Local de armazenamento permanente das métricas de execução, dos arquivos CSV, das cópias de configuração e das saídas do solucionador de cada rodada experimental (como `result_0001/`, `result_0002/`).
+* **`project/validator/`**: Contempla os scripts Python de validação (`validator.py`) utilizados na verificação da corretude e da viabilidade das soluções produzidas pelos algoritmos.
