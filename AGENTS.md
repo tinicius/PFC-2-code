@@ -9,7 +9,7 @@ This document explains the purpose of all major directories in the `pfc2` reposi
 - **`.vscode/`**: Contains Visual Studio Code workspace settings and configurations.
 - **`best_solutions/`**: Stores the best known solutions found for the problem instances, likely used for reference or comparison.
 - **`datasets/`**: Contains the problem instances organized by dataset groups (`a`, `b`, `x`, and `examples`). 
-- **`docs/`**: Documentation directory containing algorithm descriptions (e.g., `ILS.md`, `SA.md`, `AisleFirst.md`, `SimpleHeuristic.md`) and the problem description PDF (`pt_problem_description.pdf`).
+- **`docs/`**: Documentation directory containing algorithm descriptions (e.g., `ILS.md`, `SA.md`, `AisleBased.md`, `SimpleHeuristic.md`) and the problem description PDF (`pt_problem_description.pdf`).
 - **`irace/`**: Contains the configuration files (`scenario.txt`, `parameters.txt`), and execution scripts (`target-runner`) required to run the `irace` package for automatic algorithm parameter tuning.
 - **`notebooks/`**: Contains Jupyter Notebooks used for data analysis, aggregating experiment results, and generating visualizations (e.g., Pareto frontiers, comparative tables).
 - **`skills/`**: Contains AI assistant skill definitions (e.g., `tlc-spec-driven`) used to guide agentic behaviors and structured feature planning in the repository.

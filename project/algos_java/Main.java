@@ -1,7 +1,7 @@
 import java.io.IOException;
 import java.util.Random;
 
-import constructive.AisleFirst;
+import constructive.AisleBased;
 import constructive.OrderBased;
 import heuristic.Heuristic;
 import heuristic.SA;
@@ -47,8 +47,8 @@ public class Main {
         Solution solution = new Solution(problem);
 
         if ("sa".equals(algo)) {
-            // Seed SA with AisleFirst solution
-            AisleFirst constructor = new AisleFirst();
+            // Seed SA with AisleBased solution
+            AisleBased constructor = new AisleBased();
             solution = constructor.solve(problem);
 
             Heuristic solver = new SA(problem, random, alpha, t0, saMax);
@@ -80,8 +80,8 @@ public class Main {
                 solution = solver.run(solution, timeLimit, maxIters, System.out);
         }
         else if ("ils".equals(algo) || "gvns".equals(algo)) {
-            // Seed ILS with AisleFirst solution
-            AisleFirst constructor = new AisleFirst();
+            // Seed ILS with AisleBased solution
+            AisleBased constructor = new AisleBased();
             solution = constructor.solve(problem);
 
             Heuristic solver = new ILS(problem, random, maxLocalIters, perturbationStrength, acceptanceThreshold, kMax);
@@ -112,8 +112,8 @@ public class Main {
             if (solver.getMoves().size() > 0)
                 solution = solver.run(solution, timeLimit, maxIters, System.out);
         }
-        else if ("aisle_first".equals(algo)) {
-            AisleFirst solver = new AisleFirst();
+        else if ("aisle_based".equals(algo)) {
+            AisleBased solver = new AisleBased();
             solution = solver.solve(problem);
         }
         else if ("simple".equals(algo)) {

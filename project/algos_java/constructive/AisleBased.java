@@ -5,9 +5,9 @@ import model.Solution;
 
 import java.util.*;
 
-public class AisleFirst {
+public class AisleBased {
 
-    public AisleFirst() {
+    public AisleBased() {
     }
 
     // -------------------------------------------------------------------------

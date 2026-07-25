@@ -18,7 +18,7 @@ javac -d "$JAVA_DIR" \
     "$JAVA_DIR/neighborhood/RemoveAisle.java" "$JAVA_DIR/neighborhood/SwapAisle.java" \
     "$JAVA_DIR/neighborhood/SwapOrder.java" "$JAVA_DIR/neighborhood/AddOrder.java" \
     "$JAVA_DIR/neighborhood/RemoveOrder.java" \
-    "$JAVA_DIR/constructive/AisleFirst.java"
+    "$JAVA_DIR/constructive/AisleBased.java"
 
 echo ""
 echo "=== Running SA on $INSTANCE ==="

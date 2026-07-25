@@ -19,7 +19,7 @@ O algoritmo não recebe parâmetros em seu método `.solve()`, ele itera exausti
     *   `MOST_SHARED`: O pedido com maior pontuação global, cujos itens aparecem na maior parte dos corredores.
 *   **`GreedyMode`**: Modo de selecionar os corredores para atender à demanda.
     *   `SIMPLE`: Faz um ranking único dos corredores com base na demanda total necessária e varre a lista uma única vez.
-    *   `MULTI`: Iterativamente escolhe o corredor que atenda a maior parte da demanda *restante* a cada iteração (semelhante à abordagem *Dynamic Useful* do AisleFirst).
+    *   `MULTI`: Iterativamente escolhe o corredor que atenda a maior parte da demanda *restante* a cada iteração (semelhante à abordagem *Dynamic Useful* do AisleBased).
 
 ## Passo a Passo
 

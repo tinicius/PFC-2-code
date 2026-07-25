@@ -11,7 +11,7 @@ import neighborhood.Move;
  * Iterated Local Search (ILS) with General Variable Neighborhood Search (GVNS).
  *
  * GVNS Cycle:
- * s₀ ← InitialSolution (AisleFirst)
+ * s₀ ← InitialSolution (AisleBased)
  * s* ← VND(s₀)
  * while stopping criterion not met:
  *   s' ← Shake(s*, k) ← guided: remove worst aisles, add best candidates (strength k)

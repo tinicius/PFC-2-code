@@ -59,8 +59,8 @@
   },
   "algorithms": [
     {
-      "id": "aisle_first",
-      "binary": "aisle_first"
+      "id": "aisle_based",
+      "binary": "aisle_based"
     }
   ],
   "runs_per_instance": 5,

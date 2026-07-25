@@ -1,8 +1,8 @@
-# Aisle First (Construtiva)
+# Aisle Based (Construtiva)
 
-A heurística construtiva **AisleFirst** adota a abordagem de selecionar e adicionar corredores de forma gulosa (ordenando-os por diferentes critérios) e em seguida empacotar o máximo possível de pedidos iterativamente com base no inventário dos corredores selecionados.
+A heurística construtiva **AisleBased** adota a abordagem de selecionar e adicionar corredores de forma gulosa (ordenando-os por diferentes critérios) e em seguida empacotar o máximo possível de pedidos iterativamente com base no inventário dos corredores selecionados.
 
-Diferente de um algoritmo parametrizado externamente, o `AisleFirst.java` gera e testa automaticamente **cinco diferentes estratégias construtivas** no problema e retorna o melhor resultado encontrado, garantindo a solução inicial mais forte possível.
+Diferente de um algoritmo parametrizado externamente, o `AisleBased.java` gera e testa automaticamente **cinco diferentes estratégias construtivas** no problema e retorna o melhor resultado encontrado, garantindo a solução inicial mais forte possível.
 
 ## Parâmetros Aceitos
 
@@ -32,7 +32,7 @@ Esta heurística não recebe parâmetros customizados pelo usuário/construtor. 
 ## Pseudocódigo
 
 ```text
-Função AisleFirst_Resolver(Problema):
+Função AisleBased_Resolver(Problema):
     Demanda_Total = CalculaDemandaDeTodosOsPedidos(Problema)
     Sequencia_Pedidos = OrdenaPedidosPorTamanhoDecrescente(Problema)
     
