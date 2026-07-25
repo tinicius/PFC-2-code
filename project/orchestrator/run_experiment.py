@@ -4,6 +4,7 @@ import os
 import shutil
 import subprocess
 import traceback
+import argparse
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 from collections import defaultdict
@@ -115,15 +116,53 @@ def worker(task):
         
     return seed, dataset, instance, metrics
 
+def load_seeds(seeds_path: Path) -> dict:
+    """Load the deterministic seed map from seeds.json."""
+    if not seeds_path.exists():
+        raise FileNotFoundError(
+            f"seeds.json not found at {seeds_path}. "
+            "Run generate_seeds.py to create it."
+        )
+    with open(seeds_path, "r") as f:
+        return json.load(f)
+
+
+def get_seed(seeds: dict, dataset: str, instance: str, run_id: int) -> int:
+    """Return the pre-defined seed for (dataset, instance, run_id).
+    Raises KeyError if the combination is not in the map.
+    """
+    try:
+        return seeds[dataset][instance][str(run_id)]
+    except KeyError:
+        raise KeyError(
+            f"No seed defined for ({dataset}, {instance}, run_id={run_id}). "
+            "Re-run generate_seeds.py to extend seeds.json."
+        )
+
+
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python run_experiment.py <config.json>")
-        sys.exit(1)
-        
-    config_path = sys.argv[1]
+    parser = argparse.ArgumentParser(description="Run experiment from a JSON config.")
+    parser.add_argument("config", help="Path to the experiment config JSON file.")
+    parser.add_argument(
+        "--first-run-id",
+        type=int,
+        default=1,
+        dest="first_run_id",
+        help="First run_id to execute (1-indexed, default: 1). "
+             "Useful to resume or extend an experiment without re-running earlier runs.",
+    )
+    args = parser.parse_args()
+
+    config_path = args.config
+    first_run_id = args.first_run_id
+
     with open(config_path, "r") as f:
         config = json.load(f)
-        
+
+    # Load deterministic seed table
+    seeds_path = Path(__file__).resolve().parent / "seeds.json"
+    seeds = load_seeds(seeds_path)
+
     results_base = os.path.join("project", "results")
     existing_dirs = [d for d in os.listdir(results_base) if d.startswith("result_")]
     next_id = 1
@@ -131,7 +170,7 @@ def main():
         ids = [int(d.split("_")[1]) for d in existing_dirs if d.split("_")[1].isdigit()]
         if ids:
             next_id = max(ids) + 1
-            
+
     result_dir = os.path.join(results_base, f"result_{next_id:04d}")
     os.makedirs(result_dir, exist_ok=True)
     
@@ -172,11 +211,20 @@ def main():
             print(f"ERROR: Maven compilation failed with exit code {e.returncode}.")
             sys.exit(1)
 
+    runs_per_instance = config.get('runs_per_instance', 1)
+    last_run_id = first_run_id + runs_per_instance - 1
+
+    if first_run_id < 1:
+        print("ERROR: --first-run-id must be >= 1.", file=sys.stderr)
+        sys.exit(1)
+
+    print(f"Run IDs: {first_run_id} to {last_run_id} ({runs_per_instance} run(s) per instance)")
+
     tasks = []
     for dataset, instances in config['datasets'].items():
         for instance in instances:
-            for run_id in range(1, config.get('runs_per_instance', 1) + 1):
-                seed = random.randint(1, 100000)
+            for run_id in range(first_run_id, last_run_id + 1):
+                seed = get_seed(seeds, dataset, instance, run_id)
                 for algo in config['algorithms']:
                     tasks.append({
                         'dataset': dataset,
