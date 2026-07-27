@@ -1,0 +1,4 @@
+algo_id,run_id,seed,status,objective,items,aisles,exec_time
+gvns_2,1,95933,feasible,157.77777777777777,2840,18,600.883
+gvns_3,1,95933,feasible,157.38888888888889,2833,18,600.902
+gvns_1,1,95933,feasible,162.94117647058823,2770,17,601.13

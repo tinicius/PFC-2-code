@@ -1,7 +1,7 @@
 instances = 20 + 15 + 15
 time_limit_s = 600 # 10 minutes
 
-executions = 2
+executions = 5
 
 threads = 12
 

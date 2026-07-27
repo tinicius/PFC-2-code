@@ -1,0 +1,255 @@
+{
+  "datasets": {
+    "a": [
+      "instance_0008.txt",
+      "instance_0009.txt",
+      "instance_0010.txt",
+      "instance_0011.txt"
+    ]
+  },
+  "algorithms": [
+    {
+      "id": "gvns_at001_ps010_li2000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 2000,
+        "pertubationStrength": 0.1,
+        "acceptanceThreshold": 0.01,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at001_ps010_li5000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 5000,
+        "pertubationStrength": 0.1,
+        "acceptanceThreshold": 0.01,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at001_ps010_li8000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 8000,
+        "pertubationStrength": 0.1,
+        "acceptanceThreshold": 0.01,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at001_ps010_li12000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 12000,
+        "pertubationStrength": 0.1,
+        "acceptanceThreshold": 0.01,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at001_ps020_li2000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 2000,
+        "pertubationStrength": 0.2,
+        "acceptanceThreshold": 0.01,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at001_ps020_li5000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 5000,
+        "pertubationStrength": 0.2,
+        "acceptanceThreshold": 0.01,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at001_ps020_li8000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 8000,
+        "pertubationStrength": 0.2,
+        "acceptanceThreshold": 0.01,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at001_ps020_li12000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 12000,
+        "pertubationStrength": 0.2,
+        "acceptanceThreshold": 0.01,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at005_ps010_li2000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 2000,
+        "pertubationStrength": 0.1,
+        "acceptanceThreshold": 0.05,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at005_ps010_li5000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 5000,
+        "pertubationStrength": 0.1,
+        "acceptanceThreshold": 0.05,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at005_ps010_li8000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 8000,
+        "pertubationStrength": 0.1,
+        "acceptanceThreshold": 0.05,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at005_ps010_li12000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 12000,
+        "pertubationStrength": 0.1,
+        "acceptanceThreshold": 0.05,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at005_ps020_li2000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 2000,
+        "pertubationStrength": 0.2,
+        "acceptanceThreshold": 0.05,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at005_ps020_li5000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 5000,
+        "pertubationStrength": 0.2,
+        "acceptanceThreshold": 0.05,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at005_ps020_li8000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 8000,
+        "pertubationStrength": 0.2,
+        "acceptanceThreshold": 0.05,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at005_ps020_li12000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 12000,
+        "pertubationStrength": 0.2,
+        "acceptanceThreshold": 0.05,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at010_ps010_li2000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 2000,
+        "pertubationStrength": 0.1,
+        "acceptanceThreshold": 0.1,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at010_ps010_li5000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 5000,
+        "pertubationStrength": 0.1,
+        "acceptanceThreshold": 0.1,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at010_ps010_li8000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 8000,
+        "pertubationStrength": 0.1,
+        "acceptanceThreshold": 0.1,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at010_ps010_li12000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 12000,
+        "pertubationStrength": 0.1,
+        "acceptanceThreshold": 0.1,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at010_ps020_li2000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 2000,
+        "pertubationStrength": 0.2,
+        "acceptanceThreshold": 0.1,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at010_ps020_li5000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 5000,
+        "pertubationStrength": 0.2,
+        "acceptanceThreshold": 0.1,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at010_ps020_li8000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 8000,
+        "pertubationStrength": 0.2,
+        "acceptanceThreshold": 0.1,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_at010_ps020_li12000",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 12000,
+        "pertubationStrength": 0.2,
+        "acceptanceThreshold": 0.1,
+        "kMax": 4
+      }
+    }
+  ],
+  "runs_per_instance": 2,
+  "time_limit": 600,
+  "n_workers": 12
+}

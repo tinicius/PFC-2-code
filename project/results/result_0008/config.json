@@ -1,0 +1,44 @@
+{
+  "datasets": {
+    "a": [
+      "instance_0009.txt",
+      "instance_0010.txt",
+      "instance_0011.txt"
+    ]
+  },
+  "algorithms": [
+    {
+      "id": "gvns_conservative",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 5000,
+        "pertubationStrength": 0.1,
+        "acceptanceThreshold": 0.02,
+        "kMax": 5
+      }
+    },
+    {
+      "id": "gvns_balanced",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 8000,
+        "pertubationStrength": 0.15,
+        "acceptanceThreshold": 0.05,
+        "kMax": 4
+      }
+    },
+    {
+      "id": "gvns_aggressive",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 3000,
+        "pertubationStrength": 0.25,
+        "acceptanceThreshold": 0.1,
+        "kMax": 6
+      }
+    }
+  ],
+  "runs_per_instance": 1,
+  "time_limit": 600,
+  "n_workers": 12
+}

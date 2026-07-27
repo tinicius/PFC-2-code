@@ -9,7 +9,7 @@ Este documento explica o propósito de todos os diretórios principais no reposi
 * **`.vscode/`**: Armazena as configurações e os ajustes de workspace do Visual Studio Code.
 * **`best_solutions/`**: Retém as melhores soluções conhecidas para as instâncias do problema, possivelmente utilizadas como referência ou comparação (como o arquivo `best_objectives.csv` para cálculos de RPD).
 * **`datasets/`**: Possui as instâncias do problema organizadas por grupos de conjuntos de dados (`a`, `b`, `x` e `examples`).
-* **`docs/`**: Diretório de documentação com as descrições dos algoritmos (por exemplo, `ILS.md`, `SA.md`, `AisleBased.md`, `SimpleHeuristic.md`) e o PDF de descrição do problema (`pt_problem_description.pdf`).
+* **`docs/`**: Diretório de documentação com as descrições dos algoritmos (por exemplo, `GVNS.md`, `SA.md`, `AisleBased.md`, `SimpleHeuristic.md`) e o PDF de descrição do problema (`pt_problem_description.pdf`).
 * **`irace/`**: Mantém os arquivos de configuração (`scenario.txt`, `parameters.txt`) e os scripts de execução (`target-runner`) necessários para executar o pacote `irace` na sintonia automática de parâmetros dos algoritmos.
 * **`notebooks/`**: Engloba os Notebooks Jupyter empregados na análise de dados, na agregação de resultados de experimentos e na geração de visualizações. Abarca arquivos como `comparacao_algoritmos.ipynb` para testes estatísticos e `analise_resultados.ipynb`, além do subdiretório `output/`.
 * **`skills/`**: Reúne as definições de habilidades de assistentes de IA (por exemplo, `tlc-spec-driven`) usadas para guiar os comportamentos dos agentes e o planejamento estruturado de recursos.

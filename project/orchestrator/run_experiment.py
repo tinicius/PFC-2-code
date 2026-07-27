@@ -187,7 +187,7 @@ def main():
     subprocess.run(
         ["/usr/lib/jvm/java-21-openjdk-amd64/bin/javac", "-d", ".",
             "Main.java",
-            "heuristic/Heuristic.java", "heuristic/SA.java", "heuristic/ILS.java",
+            "heuristic/Heuristic.java", "heuristic/SA.java", "heuristic/GVNS.java",
             "model/Problem.java", "model/Solution.java",
             "neighborhood/Move.java", "neighborhood/AddAisle.java", "neighborhood/RemoveAisle.java",
             "neighborhood/SwapAisle.java", "neighborhood/SwapOrder.java", 

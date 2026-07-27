@@ -5,7 +5,7 @@ import constructive.AisleBased;
 import constructive.OrderBased;
 import heuristic.Heuristic;
 import heuristic.SA;
-import heuristic.ILS;
+import heuristic.GVNS;
 import model.Problem;
 import model.Solution;
 import neighborhood.AddAisle;
@@ -27,7 +27,7 @@ public class Main {
     public static int saMax = 10000;
     public static String score = "useful";
 
-    // ILS parameters
+    // Parameters
     public static int maxLocalIters = 8000;
     public static double perturbationStrength = 0.30;
     public static double acceptanceThreshold = 0.01;
@@ -79,12 +79,12 @@ public class Main {
 
             if (solver.getMoves().size() > 0)
                 solution = solver.run(solution, timeLimit, maxIters, System.out);
-        } else if ("ils".equals(algo) || "gvns".equals(algo)) {
-            // Seed ILS with AisleBased solution
+        } else if ("gvns".equals(algo)) {
+
             AisleBased constructor = new AisleBased();
             solution = constructor.solve(problem);
 
-            Heuristic solver = new ILS(problem, random, maxLocalIters, perturbationStrength, acceptanceThreshold, kMax);
+            Heuristic solver = new GVNS(problem, random, maxLocalIters, perturbationStrength, acceptanceThreshold, kMax);
             Move addAisle = new AddAisle(problem, random, "AddAisle");
             addAisle.setPriority(2);
             solver.addMove(addAisle);

@@ -73,7 +73,7 @@ done
 # Monta JSON de parâmetros
 # ---------------------------------------------------------------------------
 
-if [ "$ALGO" = "ils" ]; then
+if [ "$ALGO" = "gvns" ]; then
 
 PARAMS=$(cat <<EOF
 {"maxLocalIters":$MAX_LOCAL_ITERS,"perturbationStrength":$PERTURBATION_STRENGTH,"acceptanceThreshold":$ACCEPTANCE_THRESHOLD,"kMax":$K_MAX}

@@ -1,8 +1,8 @@
 ## Algoritmo
-algorithm             "--algo="                 c  (ils)
+algorithm             "--algo="                 c  (gvns)
 
-## Parâmetros do ILS/GVNS
-maxLocalIters         "--maxLocalIters="        i  (500, 8000)          | algorithm == "ils"
-perturbationStrength  "--perturbationStrength=" r  (0.05, 0.40)         | algorithm == "ils"
-acceptanceThreshold   "--acceptanceThreshold="  r  (0.0, 0.10)          | algorithm == "ils"
-kMax                  "--kMax="                 i  (2, 10)              | algorithm == "ils"
+## Parâmetros do GVNS
+maxLocalIters         "--maxLocalIters="        i  (500, 8000)          
+perturbationStrength  "--perturbationStrength=" r  (0.05, 0.40)         
+acceptanceThreshold   "--acceptanceThreshold="  r  (0.0, 0.10)          
+kMax                  "--kMax="                 i  (2, 10)              

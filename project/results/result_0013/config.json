@@ -1,0 +1,34 @@
+{
+  "datasets": {
+    "a": [
+      "instance_0009.txt",
+      "instance_0010.txt",
+      "instance_0011.txt"
+    ]
+  },
+  "algorithms": [
+    {
+      "id": "gvns",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 3000,
+        "pertubationStrength": 0.25,
+        "acceptanceThreshold": 0.1,
+        "kMax": 6
+      }
+    },
+    {
+      "id": "gvns",
+      "binary": "gvns",
+      "params": {
+        "maxLocalIters": 10000,
+        "pertubationStrength": 0.25,
+        "acceptanceThreshold": 0.1,
+        "kMax": 6
+      }
+    }
+  ],
+  "runs_per_instance": 2,
+  "time_limit": 600,
+  "n_workers": 12
+}
