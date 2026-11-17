@@ -1,0 +1,32 @@
+\begin{table}[htbp]
+  \centering
+  \caption{\label{tab:sintese_geral} Desempenho comparativo dos algoritmos por conjunto de instâncias (médias de 30 sementes por instância).}
+  \resizebox{\textwidth}{!}{
+    \begin{tabular}{l l r r c c r}
+      \toprule
+      \textbf{Dataset ($N$)} & \textbf{Algoritmo} & \textbf{RPD Médio $\pm$ DP (\%)} & \textbf{RPD Med. (\%)} & \textbf{RPD $\le 1\%$} & \textbf{\#MSC} & \textbf{Tempo Médio $\pm$ DP (s)} \\
+      \midrule
+      \multirow{4}{*}{\textbf{A (20)}} & OrderBased & 69,30 $\pm$ 27,29 & 80,22 & 1/20 & 1/20 & 13,45 $\pm$ 15,02 \\
+       & AisleBased & 6,15 $\pm$ 10,39 & 0,11 & 12/20 & 10/20 & 0,43 $\pm$ 0,45 \\
+       & \textbf{GVNS} & 0,15 $\pm$ 0,49 & 0,00 & 19/20 & 17/20 & 317,19 $\pm$ 270,45 \\
+       & Santos e Baldotto (2025) & 0,02 $\pm$ 0,06 & 0,00 & 20/20 & 18/20 & 70,49 $\pm$ 151,10 \\
+      \midrule
+      \multirow{4}{*}{\textbf{B (15)}} & OrderBased & 88,75 $\pm$ 8,28 & 92,36 & 0/15 & 0/15 & 19,45 $\pm$ 13,20 \\
+       & AisleBased & 2,16 $\pm$ 2,45 & 0,85 & 8/15 & 4/15 & 2,41 $\pm$ 3,05 \\
+       & \textbf{GVNS} & 0,03 $\pm$ 0,06 & 0,00 & 15/15 & 10/15 & 568,40 $\pm$ 90,13 \\
+       & Santos e Baldotto (2025) & 0,02 $\pm$ 0,06 & 0,00 & 15/15 & 12/15 & 222,19 $\pm$ 236,98 \\
+      \midrule
+      \multirow{4}{*}{\textbf{X (15)}} & OrderBased & 90,40 $\pm$ 7,57 & 94,43 & 0/15 & 0/15 & 15,68 $\pm$ 13,68 \\
+       & AisleBased & 1,98 $\pm$ 2,32 & 0,70 & 8/15 & 2/15 & 3,76 $\pm$ 3,87 \\
+       & \textbf{GVNS} & 0,38 $\pm$ 0,84 & 0,00 & 13/15 & 9/15 & 592,95 $\pm$ 3,19 \\
+       & Santos e Baldotto (2025) & 0,02 $\pm$ 0,06 & 0,00 & 15/15 & 13/15 & 319,70 $\pm$ 266,95 \\
+      \midrule
+      \multirow{4}{*}{\textbf{Geral (50)}} & OrderBased & 81,47 $\pm$ 20,63 & 88,75 & 1/50 & 1/50 & 15,92 $\pm$ 14,04 \\
+       & AisleBased & 3,70 $\pm$ 7,02 & 0,73 & 28/50 & 16/50 & 2,02 $\pm$ 3,01 \\
+       & \textbf{GVNS} & 0,18 $\pm$ 0,56 & 0,00 & 47/50 & 36/50 & 475,28 $\pm$ 218,59 \\
+       & Santos e Baldotto (2025) & 0,02 $\pm$ 0,06 & 0,00 & 50/50 & 43/50 & 190,77 $\pm$ 237,81 \\
+      \bottomrule
+    \end{tabular}
+  }
+  \caption*{\footnotesize Fonte: Elaborado pelo autor, 2026.}
+\end{table}

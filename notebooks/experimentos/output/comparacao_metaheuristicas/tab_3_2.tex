@@ -1,0 +1,22 @@
+\small
+\begin{tabular}{llcrrrr}
+\toprule
+Dataset & Visão & V--E--D & $\textbackslash\{\}Delta$ mediana (p.p.) & $p$ (Wilcoxon) & Tempo GVNS (s) & Tempo Ref. (s) \\
+\midrule
+A & Média & 0--18--2 & 0,000 & 0,500 & 316,8 & 70,3 \\
+ & Melhor & 0--18--2 & 0,000 & 0,500 &  &  \\
+B & Média & 2--8--5 & 0,000 & 0,297 & 567,8 & 222,2 \\
+ & Melhor & 3--9--3 & 0,000 & 0,562 &  &  \\
+X & Média & 2--7--6 & 0,000 & 0,195 & 593,0 & 319,7 \\
+ & Melhor & 2--8--5 & 0,000 & 0,219 &  &  \\
+Geral & Média & 4--33--13 & 0,000 & 0,023 & 475,0 & 190,7 \\
+ & Melhor & 5--35--10 & 0,000 & 0,188 &  &  \\
+\bottomrule
+\end{tabular}
+
+% Legenda:
+% - Visão: Média (gap médio das 5 sementes) ou Melhor (melhor semente).
+% - V--E--D: vitórias / empates / derrotas do GVNS (gap estritamente menor).
+% - Delta mediana: mediana de Gap_Ref - Gap_GVNS (p.p.); positivo favorece o GVNS.
+% - p (Wilcoxon): postos sinalizados pareado, bilateral.
+% - Tempo: tempo médio total de execução por instância (Time-to-Best nao registrado nos logs).

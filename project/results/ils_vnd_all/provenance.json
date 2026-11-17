@@ -1,0 +1,43 @@
+{
+  "created_at": "2026-10-24T20:28:38",
+  "created_by": "finalize_runs.py",
+  "result_dir": "project/results/result_0006",
+  "merged_from": [
+    "project/results/result_0002",
+    "project/results/result_0004",
+    "project/results/result_0005"
+  ],
+  "sources": [
+    {
+      "result_dir": "project/results/result_0002",
+      "started_at": "2026-09-17T08:01:33",
+      "git_commit": "010cd01cd87fef7fc987b16bd80283564494821c",
+      "git_dirty": true,
+      "hostname": "vinicius-Nitro-ANV15-51",
+      "n_workers": 8
+    },
+    {
+      "result_dir": "project/results/result_0004",
+      "started_at": "2026-09-21T07:13:42",
+      "git_commit": "010cd01cd87fef7fc987b16bd80283564494821c",
+      "git_dirty": true,
+      "hostname": "vinicius-Nitro-ANV15-51",
+      "n_workers": 8
+    },
+    {
+      "result_dir": "project/results/result_0005",
+      "started_at": "2026-09-22T07:37:26",
+      "git_commit": "010cd01cd87fef7fc987b16bd80283564494821c",
+      "git_dirty": true,
+      "hostname": "vinicius-Nitro-ANV15-51",
+      "n_workers": 8
+    }
+  ],
+  "instances": 50,
+  "runs_per_instance": 30,
+  "time_limit": 590,
+  "algorithms": [
+    "ils_vnd_li2500_sa600_ps005"
+  ],
+  "python_version": "3.12.3"
+}

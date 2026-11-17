@@ -1,0 +1,23 @@
+{
+  "datasets": {
+    "x": [
+      "instance_0001.txt",
+      "instance_0002.txt",
+      "instance_0003.txt",
+      "instance_0004.txt",
+      "instance_0005.txt",
+      "instance_0006.txt",
+      "instance_0007.txt",
+      "instance_0015.txt"
+    ]
+  },
+  "algorithms": [
+    {
+      "id": "andre_feijo",
+      "binary": "andre_feijo"
+    }
+  ],
+  "runs_per_instance": 30,
+  "time_limit": 650,
+  "n_workers": 1
+}

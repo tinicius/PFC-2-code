@@ -1,0 +1,5 @@
+visao,algo,rho(1),rho(1.01),rho(1.05),max_r
+Média das 5 sementes,GVNS,0.74,0.94,1.0,1.0298848628513377
+Média das 5 sementes,Referência,0.92,1.0,1.0,1.0021390374331551
+Melhor das 5 sementes,GVNS,0.8,0.94,1.0,1.0274493243243243
+Melhor das 5 sementes,Referência,0.9,1.0,1.0,1.0021390374331551

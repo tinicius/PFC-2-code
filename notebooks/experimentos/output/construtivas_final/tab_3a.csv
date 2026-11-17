@@ -1,0 +1,9 @@
+Dataset,Algoritmo,Unidades_mediana,Unidades_media,Corredores_mediana,Corredores_media
+A,AisleBased,324.5,767.65,4.0,20.1
+A,OrderBased,1102.0,1919.4,81.5,127.25
+B,AisleBased,2260.0,3041.5333333333333,10.0,10.4
+B,OrderBased,3968.0,7814.0,327.0,270.8666666666667
+X,AisleBased,2367.0,3377.9333333333334,7.0,8.4
+X,OrderBased,5518.0,11886.133333333333,368.0,294.32666666666665
+Geral,AisleBased,1705.5,2232.9,6.5,13.68
+Geral,OrderBased,3763.0,6677.8,128.0,220.458

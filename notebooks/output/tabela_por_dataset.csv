@@ -1,0 +1,3 @@
+Dataset,Algoritmo,Total Runs,% Melhor + DP,Tempo media + DP
+a,ils_vnd_ps3_kr10_kt3_l5,20,99.9127 +- 0.2918,407.6304 +- 248.5857
+a,gvns_li2500_sa600_ps005_k1,600,99.8473 +- 0.5788,317.1888 +- 263.9079

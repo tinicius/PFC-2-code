@@ -1,0 +1,26 @@
+{
+  "created_at": "2026-09-13T17:13:55",
+  "created_by": "manual consolidation (verified copy, not finalize_runs.py)",
+  "result_dir": "project/results/andre_feijo_all",
+  "note": "finalize_runs.py could not be used directly because two of the sources (result_0009, andrefeijo_a_b_completed) are themselves CSV-only outputs with no validation_log.jsonl to rebuild from. Each source CSV was verified byte-identical against its origin (diff -q) and confirmed to have exactly runs_per_instance=30 rows before being copied here.",
+  "merged_from": [
+    "project/results/andrefeijo_a_b_completed/a  (== project/results/result_0006/a, verified via diff)",
+    "project/results/andrefeijo_a_b_completed/b  (== project/results/result_0009/b (0001-0013) + project/results/result_0010/b (0014-0015), verified via diff)",
+    "project/results/result_0010/x (instance_0001-0002)",
+    "project/results/result_0011/x (instance_0001-0007, 0015)",
+    "project/results/result_0012/x (instance_0008-0009)",
+    "project/results/result_0013/x (instance_0010-0011)",
+    "project/results/result_0014/x (instance_0012-0013)",
+    "project/results/result_0015/x (instance_0014)"
+  ],
+  "instances": 50,
+  "instances_by_dataset": {
+    "a": 20,
+    "b": 15,
+    "x": 15
+  },
+  "runs_per_instance": 30,
+  "time_limit": 650,
+  "algorithms": ["andre_feijo"],
+  "verification": "every CSV in a/, b/, x/ confirmed to have exactly 30 data rows (30 runs) before inclusion"
+}

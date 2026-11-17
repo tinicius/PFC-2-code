@@ -1,0 +1,19 @@
+\small
+\begin{tabular}{lrrrrrrr}
+\toprule
+Algoritmo & Gap mediano (\%) & Gap médio (\%) & Gap $\leq$ 1\% & Tempo médio (s) & Rank médio & $p$ Holm & $p$ Nemenyi \\
+\midrule
+OrderBased & 88,75 & 81,47 & 1/50 & 15,92 & 3,97 & $<$ 0,001 & $<$ 0,001 \\
+AisleBased & 0,73 & 3,70 & 28/50 & 2,02 & 2,69 & $<$ 0,001 & $<$ 0,001 \\
+ILS-VND & 0,00 & 0,18 & 47/50 & 474,97 & 1,76 & 0,023 & 0,898 \\
+Referência & 0,00 & 0,02 & 50/50 & 190,71 & 1,58 & -- & -- \\
+\bottomrule
+\end{tabular}
+
+% Legenda:
+% - Gap mediano/medio: estatisticas do gap (%) por instancia (media das replicas), N = 50.
+% - Gap <= 1%: instancias com gap <= 1%.
+% - Tempo medio: media entre instancias do tempo de execucao (s).
+% - Rank medio: rank medio de Friedman (menor e melhor).
+% - p Holm / p Nemenyi: p ajustado contra o lider (Referência); -- indica o proprio lider.
+% - Friedman: chi2 = 130.109, gl = 3, p = 5.124e-28; CD de Nemenyi = 0.663.

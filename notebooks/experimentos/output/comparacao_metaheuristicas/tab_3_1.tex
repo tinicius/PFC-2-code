@@ -1,0 +1,22 @@
+\small
+\begin{tabular}{llrrrcc}
+\toprule
+Dataset & Método & Média (DP) & DP sem. & Melhor & Gap $\leq$ 1\% (méd.\,|\,melhor) & Gap $=$ 0\% (méd.\,|\,melhor) \\
+\midrule
+A (20) & GVNS & 0,15 (0,53) & 0,030 & 0,12 & 19 | 19 & 18 | 18 \\
+ & Referência & 0,02 (0,06) & 0,000 & 0,02 & 20 | 20 & 18 | 18 \\
+B (15) & GVNS & 0,04 (0,10) & 0,030 & 0,01 & 15 | 15 & 10 | 11 \\
+ & Referência & 0,02 (0,06) & 0,000 & 0,02 & 15 | 15 & 12 | 12 \\
+X (15) & GVNS & 0,37 (0,82) & 0,081 & 0,29 & 13 | 13 & 9 | 10 \\
+ & Referência & 0,02 (0,06) & 0,000 & 0,02 & 15 | 15 & 13 | 13 \\
+Geral (50) & GVNS & 0,18 (0,57) & 0,045 & 0,14 & 47 | 47 & 37 | 39 \\
+ & Referência & 0,02 (0,06) & 0,000 & 0,02 & 50 | 50 & 43 | 43 \\
+\bottomrule
+\end{tabular}
+
+% Legenda:
+% - Dataset (N): A, B, X ou Geral.
+% - Média (DP): média e desvio padrão entre instâncias do gap médio das 5 sementes (%).
+% - DP sem.: média entre instâncias do desvio padrão do gap entre as 5 sementes (p.p.).
+% - Melhor: média entre instâncias do gap da melhor semente (%).
+% - Gap <= 1% e Gap = 0% (MSC igualada/superada): nº de instâncias, visão média | visão melhor.

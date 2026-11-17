@@ -1,0 +1,7 @@
+instance,n_orders,n_items,n_aisles_inst,lb,ub,grupo
+instance_0009,70.0,222.0,304.0,52.0,153.0,piores_5
+instance_0003,82.0,246.0,124.0,33.0,106.0,piores_5
+instance_0011,1029.0,2784.0,375.0,330.0,2045.0,piores_5
+instance_0010,1602.0,3689.0,383.0,416.0,1746.0,piores_5
+instance_0008,2185.0,5831.0,168.0,1304.0,2840.0,piores_5
+mediana_demais,2257.0,2104.0,134.0,152.0,999.0,demais_15

@@ -1,0 +1,25 @@
+\small
+\begin{tabular}{llrrrrrr}
+\toprule
+Dataset & Algoritmo & Mediana & Média (DP) & P90 & Máx. & Gap $\leq$ 1\% ($n$/$N$) & Tempo (s) \\
+\midrule
+A & AisleBased & 0,11 & 6,15 (10,39) & 25,14 & 31,17 & 12/20 & 0,23 \\
+ & OrderBased & 80,22 & 69,30 (27,29) & 92,96 & 95,38 & 1/20 & 0,53 \\
+B & AisleBased & 0,85 & 2,16 (2,45) & 5,92 & 7,25 & 8/15 & 0,84 \\
+ & OrderBased & 92,36 & 88,75 (8,28) & 95,29 & 95,40 & 0/15 & 29,12 \\
+X & AisleBased & 0,70 & 1,98 (2,32) & 4,69 & 7,20 & 8/15 & 1,24 \\
+ & OrderBased & 94,43 & 90,40 (7,57) & 96,17 & 97,03 & 0/15 & 5,90 \\
+Geral & AisleBased & 0,73 & 3,70 (7,02) & 10,00 & 31,17 & 28/50 & 0,75 \\
+ & OrderBased & 88,75 & 81,47 (20,63) & 95,35 & 97,03 & 1/50 & 17,80 \\
+\bottomrule
+\end{tabular}
+
+% Legenda e Descrição das Colunas:
+% - Dataset: Subconjunto de instâncias avaliado (A, B, X, Geral).
+% - Algoritmo: Heurística construtiva avaliada (AisleBased ou OrderBased).
+% - Mediana: Mediana do gap relativo percentual (%) em relação à MSC.
+% - Média (DP): Média aritmética amostral e Desvio Padrão amostral do gap relativo (%).
+% - P90: 90º percentil do gap relativo (%).
+% - Máx.: Valor máximo do gap relativo (%) observado no dataset.
+% - Gap <= 1% (n/N): Proporção de instâncias com gap relativo <= 1,0% em relação à MSC.
+% - Tempo (s): Mediana do tempo de execução por instância em segundos.

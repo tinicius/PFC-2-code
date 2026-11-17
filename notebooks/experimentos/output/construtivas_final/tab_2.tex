@@ -1,0 +1,18 @@
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Dataset & V--E--D (Aisle) & Dif. mediana (p.p.) & p-valor & Razão Order/Aisle \\
+\midrule
+A & 19--1--0 & 73,67 & $3,81\cdot 10^{-6}$ & 19,04 \\
+B & 15--0--0 & 91,82 & $6,10\cdot 10^{-5}$ & 16,44 \\
+X & 15--0--0 & 94,12 & $6,10\cdot 10^{-5}$ & 3,65 \\
+Geral & 49--1--0 & 88,75 & $3,55\cdot 10^{-15}$ & 14,06 \\
+\bottomrule
+\end{tabular}
+
+% Legenda e Descrição das Colunas:
+% - Dataset: Subconjunto de instâncias avaliado (A, B, X, Geral).
+% - V--E--D (Aisle): Placar pareado Vitórias--Empates--Derrotas do AisleBased sobre o OrderBased em relação ao gap.
+% - Dif. mediana (p.p.): Mediana das diferenças pareadas de gap (OrderBased - AisleBased) em pontos percentuais.
+% - p-valor: p-valor bilateral exato do Teste de Sinais (H0: desempenho equivalente).
+% - Razão Order/Aisle: Mediana das razões de tempo pareadas por instância (Tempo Order / Tempo Aisle).

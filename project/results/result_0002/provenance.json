@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-09-17T08:01:33",
+  "result_dir": "project/results/result_0002",
+  "git_commit": "010cd01cd87fef7fc987b16bd80283564494821c",
+  "git_branch": "main",
+  "git_dirty": true,
+  "python_version": "3.12.3",
+  "java_version": "openjdk version \"21.0.12\" 2026-07-21\nOpenJDK Runtime Environment (build 21.0.12+8-1-24.04-Ubuntu)\nOpenJDK 64-Bit Server VM (build 21.0.12+8-1-24.04-Ubuntu, mixed mode, sharing)",
+  "hostname": "vinicius-Nitro-ANV15-51",
+  "cpu_count": 12,
+  "n_workers": 8,
+  "time_limit": 590,
+  "time_grace": 15.0,
+  "runs_per_instance": 30,
+  "algorithms": [
+    "ils_vnd_li2500_sa600_ps005"
+  ]
+}

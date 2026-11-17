@@ -1,0 +1,21 @@
+\small
+\begin{tabular}{llrrrrc}
+\toprule
+Dataset & Método & Unid. mediana & Unid. média & Corr. mediana & Corr. média & Origem do ganho (Corr./Unid./Ambos/Outro) \\
+\midrule
+A & AisleBased & 324,50 & 767,65 & 4,00 & 20,10 & -- \\
+ & ILS-VND & 269,50 & 621,38 & 4,00 & 7,47 & 5/5/0/0 \\
+B & AisleBased & 2260,00 & 3041,53 & 10,00 & 10,40 & -- \\
+ & ILS-VND & 2271,00 & 3020,33 & 10,00 & 10,09 & 4/8/0/0 \\
+X & AisleBased & 2367,00 & 3377,93 & 7,00 & 8,40 & -- \\
+ & ILS-VND & 2120,00 & 3255,35 & 7,00 & 6,92 & 4/8/0/0 \\
+Geral & AisleBased & 1705,50 & 2232,90 & 6,50 & 13,68 & -- \\
+ & ILS-VND & 1460,00 & 2131,26 & 5,50 & 8,09 & 13/21/0/0 \\
+\bottomrule
+\end{tabular}
+
+% Legenda:
+% - Unid./Corr.: unidades coletadas e corredores visitados (média das réplicas por instância); mediana e média entre instâncias.
+% - Origem do ganho: entre instâncias com melhora estrita, nº em que o ganho veio de
+%   menos corredores sem aumentar unidades (Corr.), mais unidades sem reduzir corredores (Unid.),
+%   ambos (Ambos) ou outra combinação (Outro).

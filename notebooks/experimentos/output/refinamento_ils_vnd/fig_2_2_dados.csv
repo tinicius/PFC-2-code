@@ -1,0 +1,5 @@
+,AisleBased ($s_0$),ILS-VND ($s^*$)
+Gap = 0% (MSC),16,37
+0% < Gap ≤ 1%,12,10
+1% < Gap ≤ 5%,12,3
+Gap > 5%,10,0

@@ -1,0 +1,16 @@
+\begin{table}[htbp]
+  \centering
+  \caption{\label{tab:testes_estatisticos} Comparação par a par pelo teste de Wilcoxon pareado sobre o RPD médio por instância ($N = 50$), com ajuste de Holm. Teste global de Friedman, corrigido para empates: $\chi^2_F(2) = 57{,}32$, $p < 0{,}001$.}
+  \resizebox{\textwidth}{!}{
+    \begin{tabular}{l r r r r}
+      \toprule
+      \textbf{Comparação (A $\times$ B)} & \textbf{Instâncias com diferença} & \textbf{Vitórias A / B} & \textbf{$r_{rb}$} & \textbf{$p$ (Holm)} \\
+      \midrule
+      Santos e Baldotto $\times$ ILS-VND & 18 & 13 / 5 & $0{,}58$ & $0{,}031$ \\
+      Santos e Baldotto $\times$ AisleBased & 34 & 34 / 0 & $1{,}00$ & $<0{,}001$ \\
+      ILS-VND $\times$ AisleBased & 33 & 33 / 0 & $1{,}00$ & $<0{,}001$ \\
+      \bottomrule
+    \end{tabular}
+  }
+  \caption*{\footnotesize Fonte: Elaborado pelo autor, 2026. Em cada par, A é o algoritmo de melhor ranking médio de Friedman; $r_{rb} > 0$ favorece A. Diferenças relativas de até 0,01\% no objetivo são tratadas como empate e não entram no teste.}
+\end{table}

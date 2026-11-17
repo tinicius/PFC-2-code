@@ -1,0 +1,2 @@
+ python3 project/orchestrator/finalize_runs.py project/results/result_0006 project/results/result_0007 project/results/result_0008 project/results/result_0010
+ERROR: project/orchestrator/result_0006 is not a directory.
